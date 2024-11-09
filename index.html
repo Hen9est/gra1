@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+        body {
+            background-color: black;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+        }
+
+
+        #screen {
+            background-color: black;
+            border: 3px solid #003366;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            height: 98vh;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 150, 255, 0.2);
+            overflow-y: auto;
+        }
+
+
+        .text {
+            color: #00aaff;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
+            padding: 5px;
+        }
+
+
+        #login {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            text-align: center;
+            background-color: black;
+            padding: 20px;
+            z-index: 2;
+        }
+
+
+        #pinInput, #userIdInput {
+            background: transparent;
+            border: 1px solid #00aaff;
+            color: #00aaff;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 24px;
+            width: 180px;
+            text-align: center;
+            margin-top: 15px;
+            outline: none;
+        }
+
+
+        #pinInput {
+            letter-spacing: 8px;
+        }
+
+
+        #userIdInput {
+            font-size: 16px;
+            width: 120px;
+            margin: 10px 0;
+        }
+
+
+        #mainContent { 
+            display: none; 
+            padding: 10px;
+        }
+
+
+        .error-message {
+            color: #ff4400;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+        }
+
+
+        .code-info {
+            color: #00ffff;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+
+
+        .requirement {
+            color: #00ffff;
+            font-size: 13px;
+            margin: 10px 0;
+            animation: blink 2s infinite;
+        }
+
+
+        @media (max-width: 480px) {
+            .text { font-size: 12px; }
+            .code-info, .requirement { font-size: 11px; }
+            #pinInput { font-size: 20px; width: 160px; }
+        }
+
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div id="screen">
+        <div id="login">
+            <div class="text" style="font-size: 16px;">TERMINAL CHEM_III</div>
+            <div class="text" style="font-size: 16px;">SEKTOR: SZYB B - PÓŁPIĘTRO</div>
+            <div class="requirement">WYMAGANY SKANER WIDMA PROMIENIOWANIA</div>
+            
+            <div class="text" style="margin-top: 20px;">ID PRACOWNIKA:</div>
+            <input type="text" id="userIdInput" maxlength="6" pattern="[A-Za-z0-9]*">
+            
+            <div class="text" style="margin-top: 20px; margin-bottom: 5px;">WPROWADŹ KOD DOSTĘPU</div>
+            <div class="code-info">KOD: 9 CYFR (6 CYFR Z MAILA + CYFRY ZE SKANERA)</div>
+            <input type="password" id="pinInput" maxlength="9" inputmode="numeric" pattern="[0-9]*">
+            <div class="error-message" id="errorMsg">ODMOWA DOSTĘPU</div>
+        </div>
+
+
+        <div id="mainContent">
+            <div id="output" class="text"></div>
+        </div>
+    </div>
+
+
+    <script>
+        const text = `Chem_III: Skład powietrza - porównanie II
+=====================================
+Data: 12.03.2143
+
+
+[ANALIZA POMIAROWA]
+
+
+[!] WYKRYTE ANOMALIE [!]
+1. Podwyższony poziom ozonu:
+   - Zgodne z wcześniejszymi badaniami
+   - Odpowiada obserwacjom zjawisk na planecie
+   - Przekracza dopuszczalne normy
+
+
+2. NIEWYJAŚNIONE ZJAWISKO:
+   Podczas wejścia ludzi do strefy badanej:
+   - Gwałtowny spadek poziomu ozonu
+   - Automatyczna regulacja do bezpiecznego poziomu
+   - Zatrzymanie na normie dopuszczalnej dla ludzi
+
+
+[!] KRYTYCZNE PYTANIA [!]
+- CO spowodowało zmianę?
+- Jak doszło do tego procesu?
+- Brak filtrów
+- Brak odpowietrzania
+- Brak wyjaśnienia technicznego
+
+
+[?] HIPOTEZA [?]
+Czy za zjawisko może być odpowiedzialna
+jakaś forma... życia?
+
+
+============================
+[!] WYMÓG BEZPIECZEŃSTWA [!]
+Każda osoba biorąca udział w skanowaniu/badaniu
+musi natychmiast:
+1. Zrobić zdjęcie kodu Q
