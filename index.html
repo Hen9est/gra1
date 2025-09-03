@@ -1,190 +1,217 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="pl">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatyczny Plan Dyżurów</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-
         body {
-            background-color: black;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            font-family: monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 5px;
+            font-family: 'Inter', sans-serif;
         }
-
-
-        #screen {
-            background-color: black;
-            border: 3px solid #003366;
-            border-radius: 5px;
-            padding: 10px;
-            width: 100%;
-            height: 98vh;
-            position: relative;
-            box-shadow: 0 0 10px rgba(0, 150, 255, 0.2);
-            overflow-y: auto;
+        .header-green { background-color: #28a745; }
+        .header-purple { background-color: #6f42c1; }
+        .header-orange { background-color: #fd7e14; }
+        .header-yellow { background-color: #ffc107; color: #333; }
+        .header-red { background-color: #dc3545; }
+        .header-blue { background-color: #007bff; }
+        .header-gray { background-color: #6c757d; }
+        
+        /* Styl dla podświetlonego wiersza */
+        .highlight-row {
+            background-color: #dbeafe; /* Jasnoniebieski z Tailwind (blue-100) */
+            font-weight: 600; /* semi-bold */
         }
-
-
-        .text {
-            color: #00aaff;
-            font-size: 14px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-break: break-word;
-            padding: 5px;
-        }
-
-
-        #login {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            text-align: center;
-            background-color: black;
-            padding: 20px;
-            z-index: 2;
-        }
-
-
-        #pinInput, #userIdInput {
-            background: transparent;
-            border: 1px solid #00aaff;
-            color: #00aaff;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 24px;
-            width: 180px;
-            text-align: center;
-            margin-top: 15px;
-            outline: none;
-        }
-
-
-        #pinInput {
-            letter-spacing: 8px;
-        }
-
-
-        #userIdInput {
-            font-size: 16px;
-            width: 120px;
-            margin: 10px 0;
-        }
-
-
-        #mainContent { 
-            display: none; 
-            padding: 10px;
-        }
-
-
-        .error-message {
-            color: #ff4400;
-            margin-top: 10px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
-        }
-
-
-        .code-info {
-            color: #00ffff;
-            font-size: 13px;
-            margin: 10px 0;
-        }
-
-
-        .requirement {
-            color: #00ffff;
-            font-size: 13px;
-            margin: 10px 0;
-            animation: blink 2s infinite;
-        }
-
-
-        @media (max-width: 480px) {
-            .text { font-size: 12px; }
-            .code-info, .requirement { font-size: 11px; }
-            #pinInput { font-size: 20px; width: 160px; }
-        }
-
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0.7; }
+        .highlight-row td {
+            color: #1e3a8a; /* Ciemniejszy niebieski (blue-800) */
         }
     </style>
 </head>
-<body>
-    <div id="screen">
-        <div id="login">
-            <div class="text" style="font-size: 16px;">TERMINAL CHEM_III</div>
-            <div class="text" style="font-size: 16px;">SEKTOR: SZYB B - PÓŁPIĘTRO</div>
-            <div class="requirement">WYMAGANY SKANER WIDMA PROMIENIOWANIA</div>
-            
-            <div class="text" style="margin-top: 20px;">ID PRACOWNIKA:</div>
-            <input type="text" id="userIdInput" maxlength="6" pattern="[A-Za-z0-9]*">
-            
-            <div class="text" style="margin-top: 20px; margin-bottom: 5px;">WPROWADŹ KOD DOSTĘPU</div>
-            <div class="code-info">KOD: 9 CYFR (6 CYFR Z MAILA + CYFRY ZE SKANERA)</div>
-            <input type="password" id="pinInput" maxlength="9" inputmode="numeric" pattern="[0-9]*">
-            <div class="error-message" id="errorMsg">ODMOWA DOSTĘPU</div>
-        </div>
+<body class="bg-gray-100 text-gray-800 p-4 sm:p-6 md:p-8">
 
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Plan Dyżurów Nauczycieli</h1>
+            <p class="text-md text-gray-600 mt-2">Harmonogram przerw międzylekcyjnych</p>
+        </header>
+        
+        <h2 id="current-day-title" class="text-2xl font-bold text-center mb-6 text-blue-700"></h2>
 
-        <div id="mainContent">
-            <div id="output" class="text"></div>
-        </div>
+        <main class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-white uppercase tracking-wider">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 bg-gray-700">Godzina</th>
+                            <th scope="col" class="py-3 px-4 header-green">Zielony</th>
+                            <th scope="col" class="py-3 px-4 header-purple">Fioletowy</th>
+                            <th scope="col" class="py-3 px-4 header-orange">Pomarańcz</th>
+                            <th scope="col" class="py-3 px-4 header-orange">Pomarańcz</th>
+                            <th scope="col" class="py-3 px-4 bg-gray-500">Underground</th>
+                            <th scope="col" class="py-3 px-4 header-yellow">Żółty</th>
+                            <th scope="col" class="py-3 px-4 header-red">Czerwony</th>
+                            <th scope="col" class="py-3 px-4 header-blue">Niebieski</th>
+                            <th scope="col" class="py-3 px-4 bg-gray-500">Parter</th>
+                            <th scope="col" class="py-3 px-4 bg-gray-500">SG</th>
+                            <th scope="col" class="py-3 px-4 header-gray">Obiad</th>
+                        </tr>
+                    </thead>
+                    <!-- Tabela: Poniedziałek -->
+                    <tbody id="tbody-poniedzialek" class="divide-y divide-gray-200 schedule-body hidden">
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:00 - 8:10</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Pierzchała-Badura</td><td></td><td></td><td>J. Szymkowicz</td><td>I. Wilczyńska</td><td>A. Mizerska</td><td></td><td>J. Jaworska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:55 - 9:05</td><td>K. Matysek-Sobolewska</td><td>M. Szydłowska</td><td>K. Miąsik</td><td>P. Latosińska</td><td>O. Ginalska</td><td>M. Gil</td><td>K. Bugajska</td><td>T. Zygmunt</td><td></td><td>K. Czajęcka</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">9:50 - 10:00</td><td>K. Staszczyk</td><td>R. Ciszewska</td><td>A. Pierzchała-Badura</td><td>J. Muc</td><td>M. Ankiewicz</td><td>A. Stankiewicz</td><td>J. Wojtan</td><td>R. Rogalski</td><td></td><td>D. Piątek</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">10:45 - 10:55</td><td>E. Szostak</td><td>R. Rogalski</td><td>E. Łubińska</td><td>ks. A. Hepek</td><td>M. Niedbał</td><td>T. Majewski</td><td>M. Gil</td><td>M. Rzepka</td><td></td><td>J. Jaworska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">11:40 - 11:50</td><td>W. Wrzaszcz</td><td>J. Miecznik-Warda</td><td>D. Gałka</td><td>D. Kolany</td><td>O. Ginalska</td><td>E. Krzyżyk</td><td>K. Jochymek</td><td>K. Jakubowska</td><td>J. Hartel</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">12:35 - 12:50</td><td>W. Wrzaszcz</td><td>R. Rogalski</td><td>I. Wilczyńska</td><td>M. Niedbał</td><td>M. Ankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>A. Mizerska</td><td>K. Bugajska</td><td></td><td>E. Łubińska</td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">13:35 - 13:50</td><td></td><td></td><td>D. Gałka</td><td></td><td>O. Ginalska</td><td>K. Jakubowska</td><td></td><td></td><td>M. Rzepka</td><td></td><td>A. Stankiewicz</td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">14:35 - 14:40</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    </tbody>
+                    <!-- Tabela: Wtorek -->
+                    <tbody id="tbody-wtorek" class="divide-y divide-gray-200 schedule-body hidden">
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:00 - 8:10</td><td>W. Wrzaszcz</td><td>J. Miecznik-Warda</td><td>K. Miąsik</td><td></td><td></td><td>O. Ginalska</td><td>K. Jochymek</td><td>A. Mizerska</td><td></td><td>T. Zygmunt</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:55 - 9:05</td><td>K. Matysek-Sobolewska</td><td>M. Szydłowska</td><td>I. Wilczyńska</td><td>M. Niedbał</td><td></td><td>M. Gil</td><td>J. Wojtan</td><td>K. Jakubowska</td><td></td><td>J. Jaworska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">9:50 - 10:00</td><td>E. Szostak</td><td>K. Miąsik</td><td>A. Szydłowska</td><td>A. Lorenc</td><td></td><td>T. Majewski</td><td>K. Bugajska</td><td>A. Mizerska</td><td></td><td>T. Zygmunt</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">10:45 - 10:55</td><td>W. Wrzaszcz</td><td>J. Miecznik-Warda</td><td>A. Pierzchała-Badura</td><td>E. Łubińska</td><td>A. Misiołek</td><td>A. Stankiewicz</td><td>K. Jochymek</td><td>K. Jakubowska</td><td></td><td>K. Matysek-Sobolewska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">11:40 - 11:50</td><td>E. Szostak</td><td>R. Ciszewska</td><td>A. Szydłowska</td><td>D. Kolany</td><td>M. Szeligiewicz</td><td>E. Krzyżyk</td><td>M. Gil</td><td>M. Rzepka</td><td>J. Hartel</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">12:35 - 12:50</td><td>K. Matysek-Sobolewska</td><td>K. Staszczyk</td><td>D. Gałka</td><td>M. Niedbał</td><td>M. Szeligiewicz</td><td>P. Latosińska</td><td>J. Wojtan</td><td>T. Zygmunt</td><td>K. Bugajska</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">13:35 - 13:50</td><td></td><td></td><td>D. Gałka</td><td></td><td>M. Ankiewicz</td><td>A. Stankiewicz</td><td></td><td></td><td>M. Rzepka</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">14:35 - 14:40</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    </tbody>
+                    <!-- Tabela: Środa -->
+                    <tbody id="tbody-sroda" class="divide-y divide-gray-200 schedule-body hidden">
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:00 - 8:10</td><td>K. Matysek-Sobolewska</td><td>M. Niedbał</td><td>D. Gałka</td><td></td><td></td><td>T. Majewski</td><td>I. Wilczyńska</td><td>A. Mizerska</td><td></td><td>T. Zygmunt</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:55 - 9:05</td><td>K. Matysek-Sobolewska</td><td>K. Staszczyk</td><td>K. Miąsik</td><td>A. Lorenc</td><td>O. Ginalska</td><td>P. Latosińska</td><td>J. Wojtan</td><td>A. Solińska</td><td></td><td>D. Piątek</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">9:50 - 10:00</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Szydłowska</td><td>M. Gil</td><td>A. Stankiewicz</td><td>E. Krzyżyk</td><td>K. Jochymek</td><td>T. Zygmunt</td><td></td><td>J. Jaworska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">10:45 - 10:55</td><td>W. Wrzaszcz</td><td>R. Ciszewska</td><td>I. Wilczyńska</td><td>D. Kolany</td><td>M. Ankiewicz</td><td>J. Szymkowicz</td><td>K. Bugajska</td><td>M. Rzepka</td><td></td><td>K. Czajęcka</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">11:40 - 11:50</td><td>R. Rogalski</td><td>J. Miecznik-Warda</td><td>D. Gałka</td><td>M. Niedbał</td><td>O. Ginalska</td><td>J. Szymkowicz</td><td>K. Jochymek</td><td>K. Jakubowska</td><td>J. Hartel</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">12:35 - 12:50</td><td>W. Wrzaszcz</td><td>R. Rogalski</td><td>A. Pierzchała-Badura</td><td>M. Gil</td><td>M. Ankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>A. Mizerska</td><td>K. Bugajska</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">13:35 - 13:50</td><td></td><td></td><td>D. Gałka</td><td></td><td>O. Ginalska</td><td>K. Jakubowska</td><td></td><td></td><td>M. Rzepka</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">14:35 - 14:40</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    </tbody>
+                    <!-- Tabela: Czwartek -->
+                    <tbody id="tbody-czwartek" class="divide-y divide-gray-200 schedule-body hidden">
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:00 - 8:10</td><td>K. Matysek-Sobolewska</td><td>K. Staszczyk</td><td>I. Wilczyńska</td><td></td><td></td><td>T. Majewski</td><td>K. Jochymek</td><td>A. Mizerska</td><td></td><td>T. Zygmunt</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:55 - 9:05</td><td>K. Matysek-Sobolewska</td><td>M. Szydłowska</td><td>K. Miąsik</td><td>M. Niedbał</td><td>O. Ginalska</td><td>M. Gil</td><td>K. Bugajska</td><td>T. Zygmunt</td><td></td><td>D. Piątek</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">9:50 - 10:00</td><td>W. Wrzaszcz</td><td>K. Miąsik</td><td>A. Szydłowska</td><td>D. Gałka</td><td>A. Stankiewicz</td><td>P. Latosińska</td><td>J. Wojtan</td><td>A. Solińska</td><td></td><td>J. Jaworska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">10:45 - 10:55</td><td>W. Wrzaszcz</td><td>R. Ciszewska</td><td>A. Pierzchała-Badura</td><td>D. Kolany</td><td>M. Niedbał</td><td>E. Krzyżyk</td><td>K. Jochymek</td><td>K. Jakubowska</td><td></td><td>K. Czajęcka</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">11:40 - 11:50</td><td>R. Rogalski</td><td>J. Miecznik-Warda</td><td>A. Szydłowska</td><td>E. Łubińska</td><td>O. Ginalska</td><td>J. Szymkowicz</td><td>M. Gil</td><td>M. Rzepka</td><td>J. Hartel</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">12:35 - 12:50</td><td>R. Rogalski</td><td></td><td>I. Wilczyńska</td><td>M. Gil</td><td>M. Ankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>A. Mizerska</td><td>K. Bugajska</td><td></td><td>E. Łubińska</td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">13:35 - 13:50</td><td></td><td></td><td>D. Gałka</td><td></td><td>O. Ginalska</td><td>K. Jakubowska</td><td></td><td></td><td>M. Rzepka</td><td></td><td>A. Stankiewicz</td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">14:35 - 14:40</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    </tbody>
+                    <!-- Tabela: Piątek -->
+                    <tbody id="tbody-piatek" class="divide-y divide-gray-200 schedule-body hidden">
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:00 - 8:10</td><td>M. Ankiewicz</td><td>R. Rogalski</td><td>E. Łubińska</td><td></td><td></td><td>M. Gil</td><td>K. Bugajska</td><td>M. Rzepka</td><td></td><td>D. Piątek</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">8:55 - 9:05</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Pierzchała-Badura</td><td>P. Latosińska</td><td>M. Ankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>A. Mizerska</td><td></td><td>T. Zygmunt</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">9:50 - 10:00</td><td>ks. A. Hepek</td><td>M. Niedbał</td><td>A. Szydłowska</td><td>D. Gałka</td><td>A. Stankiewicz</td><td>K. Jochymek</td><td>M. Rzepka</td><td>K. Jakubowska</td><td></td><td>K. Czajęcka</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">10:45 - 10:55</td><td>E. Szostak</td><td>J. Miecznik-Warda</td><td>I. Wilczyńska</td><td>D. Kolany</td><td>M. Niedbał</td><td>E. Krzyżyk</td><td>M. Gil</td><td>T. Zygmunt</td><td></td><td>J. Jaworska</td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">11:40 - 11:50</td><td>W. Wrzaszcz</td><td>R. Ciszewska</td><td>K. Miąsik</td><td>A. Lorenc</td><td>O. Ginalska</td><td>J. Szymkowicz</td><td>K. Jochymek</td><td>A. Solińska</td><td>J. Hartel</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">12:35 - 12:50</td><td>W. Wrzaszcz</td><td>K. Staszczyk</td><td></td><td></td><td>O. Ginalska</td><td>J. Szymkowicz</td><td>J. Wojtan</td><td>A. Mizerska</td><td>K. Bugajska</td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">13:35 - 13:50</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                        <tr><td class="py-4 px-4 font-medium whitespace-nowrap">14:35 - 14:40</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const schedules = document.querySelectorAll('.schedule-body');
+        const currentDayTitle = document.getElementById('current-day-title');
+        const dayIdMap = ['niedziela', 'poniedzialek', 'wtorek', 'sroda', 'czwartek', 'piatek', 'sobota'];
+        const dayNameMap = {
+            'niedziela': 'Niedziela',
+            'poniedzialek': 'Poniedziałek',
+            'wtorek': 'Wtorek',
+            'sroda': 'Środa',
+            'czwartek': 'Czwartek',
+            'piatek': 'Piątek',
+            'sobota': 'Sobota'
+        };
 
-    <script>
-        const text = `Chem_III: Skład powietrza - porównanie II
-=====================================
-Data: 12.03.2143
+        function highlightCurrentOrNextBreak(dayId) {
+            // First, remove any existing highlights from all rows
+            document.querySelectorAll('.schedule-body tr').forEach(row => {
+                row.classList.remove('highlight-row');
+            });
 
+            const activeTbody = document.getElementById(`tbody-${dayId}`);
+            if (!activeTbody) return;
 
-[ANALIZA POMIAROWA]
+            const rows = activeTbody.querySelectorAll('tr');
+            const now = new Date();
+            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            let nextBreakRow = null;
 
+            // First pass: find CURRENT break
+            for (const row of rows) {
+                const timeCell = row.cells[0];
+                if (!timeCell) continue;
 
-[!] WYKRYTE ANOMALIE [!]
-1. Podwyższony poziom ozonu:
-   - Zgodne z wcześniejszymi badaniami
-   - Odpowiada obserwacjom zjawisk na planecie
-   - Przekracza dopuszczalne normy
+                const timeText = timeCell.textContent.trim();
+                const timeMatch = timeText.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
 
+                if (timeMatch) {
+                    const startHour = parseInt(timeMatch[1], 10);
+                    const startMinute = parseInt(timeMatch[2], 10);
+                    const endHour = parseInt(timeMatch[3], 10);
+                    const endMinute = parseInt(timeMatch[4], 10);
 
-2. NIEWYJAŚNIONE ZJAWISKO:
-   Podczas wejścia ludzi do strefy badanej:
-   - Gwałtowny spadek poziomu ozonu
-   - Automatyczna regulacja do bezpiecznego poziomu
-   - Zatrzymanie na normie dopuszczalnej dla ludzi
+                    const startTimeInMinutes = startHour * 60 + startMinute;
+                    const endTimeInMinutes = endHour * 60 + endMinute;
 
+                    // Check if it's the current break
+                    if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes <= endTimeInMinutes) {
+                        row.classList.add('highlight-row');
+                        return; // Found current, highlight and exit
+                    }
+                    
+                    // If we haven't found a 'next break' yet, check if this one is in the future
+                    if (nextBreakRow === null && currentTimeInMinutes < startTimeInMinutes) {
+                        nextBreakRow = row;
+                    }
+                }
+            }
 
-[!] KRYTYCZNE PYTANIA [!]
-- CO spowodowało zmianę?
-- Jak doszło do tego procesu?
-- Brak filtrów
-- Brak odpowietrzania
-- Brak wyjaśnienia technicznego
+            // If we finished the loop and found no CURRENT break, highlight the NEXT one we found
+            if (nextBreakRow) {
+                nextBreakRow.classList.add('highlight-row');
+            }
+        }
 
+        function showScheduleForDay(dayId) {
+            schedules.forEach(tbody => tbody.classList.add('hidden'));
+            
+            const activeTbody = document.getElementById(`tbody-${dayId}`);
+            if (activeTbody) {
+                activeTbody.classList.remove('hidden');
+            }
 
-[?] HIPOTEZA [?]
-Czy za zjawisko może być odpowiedzialna
-jakaś forma... życia?
+            if (currentDayTitle && dayNameMap[dayId]) {
+                currentDayTitle.textContent = `Dyżury na: ${dayNameMap[dayId]}`;
+            }
+            
+            highlightCurrentOrNextBreak(dayId);
+        }
 
+        // Determine and show today's schedule
+        const todayIndex = new Date().getDay();
+        const defaultDayId = (todayIndex === 0 || todayIndex === 6) ? 'poniedzialek' : dayIdMap[todayIndex];
+        showScheduleForDay(defaultDayId);
 
-============================
-[!] WYMÓG BEZPIECZEŃSTWA [!]
-Każda osoba biorąca udział w skanowaniu/badaniu
-musi natychmiast:
-1. Zrobić zdjęcie kodu Q
+        // Update the highlight every minute
+        setInterval(() => {
+            const currentDayIndex = new Date().getDay();
+            const currentDayId = (currentDayIndex === 0 || currentDayIndex === 6) ? 'poniedzialek' : dayIdMap[currentDayIndex];
+            // Re-run the highlight function for the currently displayed day
+            highlightCurrentOrNextBreak(currentDayId);
+        }, 60000); 
+    });
+</script>
+
+</body>
+</html>
