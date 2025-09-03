@@ -30,13 +30,13 @@
         }
         .compact-table th, .compact-table td {
             padding: 6px 2px;
-            font-size: 8px; /* Zmniejszona czcionka */
+            font-size: 6px; /* Zmniejszona czcionka */
             text-align: center;
             white-space: normal;
             word-break: break-word;
         }
         .compact-table thead th {
-             font-size: 7px; /* Zmniejszona czcionka */
+             font-size: 5px; /* Zmniejszona czcionka */
              text-align: center;
         }
         .nr-column {
@@ -44,10 +44,13 @@
         }
         .hour-column {
             width: 45px; /* Zwężona kolumna godzin */
-            font-size: 7.5px !important; /* Zmniejszona czcionka */
+            font-size: 5.5px !important; /* Zmniejszona czcionka */
         }
         .obiad-column {
             width: 75px; /* Poszerzona kolumna obiad */
+        }
+        #current-day-title {
+            font-size: 14px; /* Zmniejszona czcionka z 16px (text-base) */
         }
     </style>
 </head>
@@ -55,7 +58,7 @@
 
     <div style="max-width: 640px;" class="mx-auto">
         
-        <h2 id="current-day-title" class="text-lg font-bold text-center my-3 text-blue-700"></h2>
+        <h2 id="current-day-title" class="font-bold text-center my-3 text-blue-700"></h2>
 
         <main class="bg-white rounded-lg shadow-lg overflow-hidden pb-[50px]">
             <div>
@@ -228,5 +231,4 @@
 
 </body>
 </html>
-
 
