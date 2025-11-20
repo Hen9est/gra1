@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automatyczny Plan Dyżurów</title>
+    <title>Plan Dyżurów</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
         .header-green { background-color: #28a745; }
         .header-purple { background-color: #6f42c1; }
         .header-orange { background-color: #fd7e14; }
@@ -18,45 +16,32 @@
         .header-blue { background-color: #007bff; }
         .header-gray { background-color: #6c757d; }
         
-        .highlight-row {
-            background-color: #dbeafe; /* Jasnoniebieski z Tailwind (blue-100) */
-            font-weight: 600;
-        }
-        .highlight-row td {
-            color: #1e3a8a; /* Ciemniejszy niebieski (blue-800) */
-        }
-        td.empty-cell {
-            text-align: center;
-        }
+        .highlight-row { background-color: #dbeafe; font-weight: 600; }
+        .highlight-row td { color: #1e3a8a; }
+        td.empty-cell { text-align: center; }
+        
+        /* Stylizacja tabeli */
         .compact-table th, .compact-table td {
             padding: 6px 2px;
-            font-size: 6px; /* Zmniejszona czcionka */
+            font-size: 10px;
             text-align: center;
             white-space: normal;
             word-break: break-word;
+            border-bottom: 1px solid #e5e7eb;
         }
-        .compact-table thead th {
-            font-size: 5px; /* Zmniejszona czcionka */
-            text-align: center;
-        }
-        .nr-column {
-            width: 25px;
-        }
-        .hour-column {
-            width: 45px; /* Zwężona kolumna godzin */
-            font-size: 5.5px !important; /* Zmniejszona czcionka */
-        }
-        .obiad-column {
-            width: 75px; /* Poszerzona kolumna obiad */
-        }
-        #current-day-title {
-            font-size: 14px; /* Zmniejszona czcionka z 16px (text-base) */
-        }
+        /* Wiersze naprzemienne dla lepszej czytelności */
+        .compact-table tbody tr:nth-child(even) { background-color: #f9fafb; }
+
+        .compact-table thead th { font-size: 9px; text-align: center; }
+        .nr-column { width: 25px; }
+        .hour-column { width: 50px; font-size: 9px !important; }
+        .obiad-column { width: 75px; }
+        #current-day-title { font-size: 16px; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 p-1">
 
-    <div style="max-width: 640px;" class="mx-auto">
+    <div style="max-width: 900px;" class="mx-auto">
         
         <h2 id="current-day-title" class="font-bold text-center my-3 text-blue-700"></h2>
 
@@ -79,72 +64,107 @@
                             <th scope="col" class="header-gray obiad-column">Obiad</th>
                         </tr>
                     </thead>
-                    <!-- Tabela: Poniedziałek -->
-                   <tbody id="tbody-poniedzialek" class="divide-y divide-gray-200 schedule-body hidden">
-                        <tr><td class="font-bold">0</td><td class="font-medium">8:00<br>8:10</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Pierzchała-Badura</td><td class="empty-cell">-</td><td>J. Szymkowicz</td><td>I. Wilczyńska</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>K. Czajęcka</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">1</td><td class="font-medium">8:55<br>9:05</td><td>K. Matysek-Sobolewska</td><td>M. Szydłowska</td><td>K. Miąsik\nP. Latosińska</td><td>M. Niedbał</td><td>M. Gil</td><td>M. Ankiewicz</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>K. Czajęcka</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">2</td><td class="font-medium">9:50<br>10:00</td><td>M. Ankiewicz</td><td>R. Rogalski</td><td>E. Łubińska\M. Piekarski</td><td>A. Stankiewicz</td><td>J. Szymkowicz</td><td>J. Wojtan</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">3</td><td class="font-medium">10:45<br>10:55</td><td>E. Szostak</td><td>R. Ciszewska</td><td>D. Gałka\nM. Szydłowska</td><td>O. Ginalska</td><td>T. Majewski</td><td>M. Gil</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">4</td><td class="font-medium">11:40<br>11:50</td><td>W. Wrzaszcz</td><td>J. Miecznik-Warda</td><td>K. Miąsik\nks. A. Hepek</td><td>O. Ginalska</td><td>E. Krzyżyk</td><td>K. Bugajska</td><td>R. Rogalski</td><td>I. Wilczyńska</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">5</td><td class="font-medium">12:35<br>12:45</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td>A. Pierzchała-Badura\nA. Lorenc</td><td>A. Stankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>K. Jakubowska</td><td>K. Bugajska</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                    </tbody>
-                    <!-- Tabela: Wtorek -->
-                    <tbody id="tbody-wtorek" class="divide-y divide-gray-200 schedule-body hidden">
-                        <tr><td class="font-bold">0</td><td class="font-medium">8:00<br>8:10</td><td>W. Wrzaszcz</td><td>J. Miecznik-Warda</td><td>K. Miąśik</td><td class="empty-cell">-</td><td>O. Ginalska</td><td>K. Jochymek</td><td>A. Lorenc</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">1</td><td class="font-medium">8:55<br>9:05</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Szydłowska<br>I. Wilczyńska</td><td>A. Misiołek</td><td>M. Gil</td><td>J. Wojtan</td><td>K. Jakubowska</td><td class="empty-cell">-</td><td>K. Matysek–Sobolewska</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">2</td><td class="font-medium">9:50<br>10:00</td><td>W. Wrzaszcz</td><td>K. Miąśik</td><td>E. Łubińska<br>A. Lorenc</td><td>M. Szeligiewicz</td><td>T. Majewski</td><td>K. Bugajska</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">3</td><td class="font-medium">10:45<br>10:55</td><td>E. Szostak</td><td>J. Miecznik-Warda</td><td>A. Szydłowska<br>E. Łubińska</td><td>A. Misiołek</td><td>A. Stankiewicz</td><td>K. Jochymek</td><td>K. Jakubowska</td><td class="empty-cell">-</td><td>K. Matysek–Sobolewska</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">4</td><td class="font-medium">11:40<br>11:50</td><td>K. Matysek-Sobolewska</td><td>R. Ciszewska</td><td>M. Niedbał<br>D. Kolany</td><td>M. Szeligiewicz</td><td>E. Krzyżyk</td><td>J. Wojtan</td><td>M. Rzepka</td><td>P. Latosińska</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">5</td><td class="font-medium">12:35<br>12:45</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td>A. Pierzchała-Badura<br>R. Rogalski</td><td>O. Ginalska</td><td>J. Szymkowicz</td><td>K. Bugajska</td><td>K. Jakubowska</td><td>M. Ankiewicz</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                    </tbody>
-                    <!-- Tabela: Środa -->
-                    <tbody id="tbody-sroda" class="divide-y divide-gray-200 schedule-body hidden">
-                        <tr><td class="font-bold">0</td><td class="font-medium">8:00<br>8:10</td><td>K. Matysek-Sobolewska</td><td>R. Ciszewska</td><td>A. Szydłowska</td><td class="empty-cell">-</td><td>J. Dominikowska</td><td>J. Wojtan</td><td>K. Jakubowska</td><td class="empty-cell">-</td><td>K. Czajęcka</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">1</td><td class="font-medium">8:55<br>9:05</td><td>E. Szostak</td><td>J. Miecznik-Warda</td><td>E. Łubińska<br>A. Pierzchała-Badura</td><td>A. Misiołek</td><td>O. Ginalska</td><td>I. Wilczyńska</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>K. Czajęcka</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">2</td><td class="font-medium">9:50<br>10:00</td><td>K. Matysek-Sobolewska</td><td>R. Ciszewska</td><td>M. Niedbał<br>M. Gil</td><td>J. Dominikowska</td><td>T. Majewski</td><td>K. Bugajska</td><td>K. Jakubowska</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">3</td><td class="font-medium">10:45<br>10:55</td><td>W. Wrzaszcz</td><td>R. Rogalski</td><td>D. Gałka<br>M. Ankiewicz</td><td>M. Szeligiewicz</td><td>A. Stankiewicz</td><td>J. Wojtan</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">4</td><td class="font-medium">11:40<br>11:50</td><td>J. Hartel</td><td>M. Szydłowska</td><td>K. Miąsik<br>M. Piekarski</td><td>A. Misiołek</td><td>J. Szymkowicz</td><td>M. Gil</td><td>M. Rzepka</td><td>A. Lorenc</td><td>K. Matysek-Sobolewska</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">5</td><td class="font-medium">12:35<br>12:45</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td>A. Pierzchała-Badura<br>E. Łubińska</td><td>M. Szeligiewicz</td><td>D. Gałka</td><td>K. Bugajska</td><td>A. Mizerska</td><td>A. Stankiewicz</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                    </tbody>
-                    <!-- Tabela: Czwartek -->
-                    <tbody id="tbody-czwartek" class="divide-y divide-gray-200 schedule-body hidden">
-                        <tr><td class="font-bold">0</td><td class="font-medium">8:00<br>8:10</td><td>K. Matysek-Sobolewska</td><td>M. Niedbał</td><td>A. Stankiewicz</td><td class="empty-cell">-</td><td>T. Majewski</td><td>I. Wilczyńska</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">1</td><td class="font-medium">8:55<br>9:05</td><td>K. Matysek-Sobolewska</td><td>R. Ciszewska</td><td>A. Pierzchała - Badura<br>D. Gałka</td><td>O. Ginalska</td><td>P. Latosińska</td><td>J. Szymkowicz</td><td>A. Solińska</td><td class="empty-cell">-</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">2</td><td class="font-medium">9:50<br>10:00</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Szydłowska<br>M. Gil</td><td>A. Stankiewicz</td><td>K. Jakubowska</td><td>K. Jochymek</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>J. Jaworska</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">3</td><td class="font-medium">10:45<br>10:55</td><td>W. Wrzaszcz</td><td>R. Ciszewska</td><td>I. Wilczyńska<br>D. Kolany</td><td>M. Ankiewicz</td><td>J. Szymkowicz</td><td>K. Bugajska</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>K. Czajęcka</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">4</td><td class="font-medium">11:40<br>11:50</td><td>W. Wrzaszcz</td><td>R. Rogalski</td><td>D. Gałka<br>M. Niedbał</td><td>O. Ginalska</td><td>J. Wojtan</td><td>K. Jochymek</td><td>K. Jakubowska</td><td>J. Hartel</td><td class="empty-cell">-</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">5</td><td class="font-medium">12:35<br>12:50</td><td>R. Rogalski</td><td>J. Miecznik-Warda</td><td>A. Pierzchała-Badura<br>M. Gil</td><td>M. Ankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>A. Mizerska</td><td>K. Bugajska</td><td class="empty-cell">-</td><td>E. Łubińska</td></tr>
-                        <tr><td class="font-bold">6</td><td class="font-medium">13:35<br>13:50</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td>D. Gałka</td><td class="empty-cell"></td><td>E. Krzyżyk</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>A. Stankiewicz</td></tr>
-                    </tbody>
-                    <!-- Tabela: Piątek -->
-                   <tbody id="tbody-piatek" class="divide-y divide-gray-200 schedule-body hidden">
-                        <tr><td class="font-bold">0</td><td class="font-medium">8:00<br>8:10</td><td>M. Ankiewicz</td><td>R. Rogalski</td><td>E. Łubińska</td><td class="empty-cell">-</td><td>M. Gil</td><td>K. Bugajska</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>D. Piątek</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">1</td><td class="font-medium">8:55<br>9:05</td><td>E. Szostak</td><td>M. Szydłowska</td><td>A. Pierzchała-Badura<br>P. Latosińska</td><td>M. Ankiewicz</td><td>T. Majewski</td><td>J. Wojtan</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">2</td><td class="font-medium">9:50<br>10:00</td><td>ks. A. Hepek</td><td>M. Niedbał</td><td>A. Szydłowska<br>D. Gałka</td><td>A. Stankiewicz</td><td>K. Jochymek</td><td>J. Szymkowicz</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>K. Czajęcka</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">3</td><td class="font-medium">10:45<br>10:55</td><td>E. Szostak</td><td>J. Miecznik-Warda</td><td>K. Miąsik<br>J. Muc</td><td>A. Solińska</td><td>K. Jakubowska</td><td>T. Majewski</td><td>A. Mizerska</td><td class="empty-cell">-</td><td>K. Matysek-Sobolewska</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">4</td><td class="font-medium">11:40<br>11:50</td><td>M. Niedbał</td><td>J. Hartel</td><td>A. Pierzchała-Badura<br>P. Latosińska</td><td>O. Ginalska</td><td>E. Krzyżyk</td><td>K. Bugajska</td><td>K. Jakubowska</td><td>M. Rzepka</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                        <tr><td class="font-bold">5</td><td class="font-medium">12:35<br>12:50</td><td>W. Wrzaszcz</td><td>R. Rogalski</td><td>D. Gałka<br>J. Muc</td><td>A. Stankiewicz</td><td>K. Jochymek</td><td>J. Wojtan</td><td>A. Mizerska</td><td>J. Hartel</td><td>J. Jaworska</td><td>R. Ciszewska</td></tr>
-                        <tr><td class="font-bold">6</td><td class="font-medium">13:35<br>13:50</td><td>M. Niedbał</td><td>K. Miąsik</td><td>E. Łubińska</td><td>O. Ginalska</td><td>M. Gil</td><td>M. Rzepka</td><td class="empty-cell">-</td><td>P. Latosińska</td><td>D. Piątek</td><td>A. Szydłowska</td></tr>
-                        <tr><td class="font-bold">7</td><td class="font-medium">14:35<br>14:40</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td class="empty-cell">-</td><td>T. Zygmunt</td><td class="empty-cell">-</td></tr>
-                    </tbody>
+                    
+                    <!-- Puste kontenery, które wypełni JavaScript -->
+                    <tbody id="tbody-poniedzialek" class="schedule-body hidden"></tbody>
+                    <tbody id="tbody-wtorek" class="schedule-body hidden"></tbody>
+                    <tbody id="tbody-sroda" class="schedule-body hidden"></tbody>
+                    <tbody id="tbody-czwartek" class="schedule-body hidden"></tbody>
+                    <tbody id="tbody-piatek" class="schedule-body hidden"></tbody>
                 </table>
             </div>
         </main>
     </div>
 
 <script>
+    // ============================================================
+    // BAZA DYŻURÓW (ZAKTUALIZOWANA)
+    // ============================================================
+    
+    const bazaDyzurow = {
+        poniedzialek: [
+            ["0", "8:00<br>8:10", "E. Szostak", "M. Szydłowska", "A. Pierzchała-Badura", "-", "J. Szymkowicz", "I. Wilczyńska", "A. Mizerska", "-", "K. Czajęcka", "-"],
+            ["1", "8:55<br>9:05", "K. Matysek-Sobolewska", "M. Szydłowska", "K. Miąsik<br>P. Latosińska", "M. Niedbał", "M. Gil", "M. Ankiewicz", "A. Mizerska", "-", "K. Czajęcka", "-"],
+            ["2", "9:50<br>10:00", "M. Ankiewicz", "R. Rogalski", "E. Łubińska<br>M. Piekarski", "A. Stankiewicz", "J. Szymkowicz", "J. Wojtan", "M. Rzepka", "-", "D. Piątek", "-"],
+            ["3", "10:45<br>10:55", "E. Szostak", "R. Ciszewska", "D. Gałka<br>M. Szydłowska", "O. Ginalska", "T. Majewski", "M. Gil", "A. Mizerska", "-", "T. Zygmunt", "-"],
+            ["4", "11:40<br>11:50", "W. Wrzaszcz", "J. Miecznik-Warda", "K. Miąsik<br>ks. A. Hepek", "O. Ginalska", "E. Krzyżyk", "K. Bugajska", "R. Rogalski", "I. Wilczyńska", "T. Zygmunt", "-"],
+            ["5", "12:35<br>12:45", "-", "-", "A. Pierzchała-Badura<br>A. Lorenc", "A. Stankiewicz", "T. Majewski", "J. Wojtan", "K. Jakubowska", "K. Bugajska", "D. Piątek", "-"]
+        ],
+        wtorek: [
+            ["0", "8:00<br>8:10", "W. Wrzaszcz", "J. Miecznik-Warda", "K. Miąśik", "-", "O. Ginalska", "K. Jochymek", "A. Lorenc", "-", "T. Zygmunt", "-"],
+            ["1", "8:55<br>9:05", "E. Szostak", "M. Szydłowska", "A. Szydłowska<br>I. Wilczyńska", "A. Misiołek", "M. Gil", "J. Wojtan", "K. Jakubowska", "-", "K. Matysek–Sobolewska", "-"],
+            ["2", "9:50<br>10:00", "W. Wrzaszcz", "K. Miąśik", "E. Łubińska<br>A. Lorenc", "M. Szeligiewicz", "T. Majewski", "K. Bugajska", "A. Mizerska", "-", "T. Zygmunt", "-"],
+            ["3", "10:45<br>10:55", "E. Szostak", "J. Miecznik-Warda", "A. Szydłowska<br>E. Łubińska", "A. Misiołek", "A. Stankiewicz", "K. Jochymek", "K. Jakubowska", "-", "K. Matysek–Sobolewska", "-"],
+            ["4", "11:40<br>11:50", "K. Matysek-Sobolewska", "R. Ciszewska", "M. Niedbał<br>D. Kolany", "O. Ginalska", "E. Krzyżyk", "J. Wojtan", "M. Rzepka", "P. Latosińska", "D. Piątek", "-"],
+            ["5", "12:35<br>12:45", "-", "-", "A. Pierzchała-Badura<br>R. Rogalski", "M. Szeligiewicz", "J. Szymkowicz", "K. Bugajska", "K. Jakubowska", "M. Ankiewicz", "D. Piątek", "-"]
+        ],
+        sroda: [
+            ["0", "8:00<br>8:10", "K. Matysek-Sobolewska", "R. Ciszewska", "A. Szydłowska", "-", "J. Dominikowska", "J. Wojtan", "K. Jakubowska", "-", "K. Czajęcka", "-"],
+            ["1", "8:55<br>9:05", "E. Szostak", "J. Miecznik-Warda", "E. Łubińska<br>A. Pierzchała-Badura", "A. Misiołek", "O. Ginalska", "I. Wilczyńska", "M. Rzepka", "-", "K. Czajęcka", "-"],
+            ["2", "9:50<br>10:00", "K. Matysek-Sobolewska", "R. Ciszewska", "M. Niedbał<br>M. Gil", "J. Dominikowska", "T. Majewski", "K. Bugajska", "K. Jakubowska", "-", "T. Zygmunt", "-"],
+            ["3", "10:45<br>10:55", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Ankiewicz", "M. Szeligiewicz", "A. Stankiewicz", "J. Wojtan", "A. Mizerska", "-", "D. Piątek", "-"],
+            ["4", "11:40<br>11:50", "J. Hartel", "M. Szydłowska", "K. Miąsik<br>M. Piekarski", "A. Misiołek", "J. Szymkowicz", "M. Gil", "M. Rzepka", "A. Lorenc", "K. Matysek-Sobolewska", "-"],
+            ["5", "12:35<br>12:45", "-", "-", "A. Pierzchała-Badura<br>E. Łubińska", "M. Szeligiewicz", "D. Gałka", "K. Bugajska", "A. Mizerska", "A. Stankiewicz", "T. Zygmunt", "-"]
+        ],
+        czwartek: [
+            ["0", "8:00<br>8:10", "K. Matysek-Sobolewska", "M. Niedbał", "A. Stankiewicz", "-", "T. Majewski", "I. Wilczyńska", "M. Rzepka", "-", "T. Zygmunt", "-"],
+            ["1", "8:55<br>9:05", "K. Matysek-Sobolewska", "R. Ciszewska", "A. Pierzchała-Badura<br>D. Gałka", "O. Ginalska", "P. Latosińska", "J. Szymkowicz", "A. Solińska", "-", "D. Piątek", "-"],
+            ["2", "9:50<br>10:00", "E. Szostak", "M. Szydłowska", "A. Szydłowska<br>M. Gil", "A. Stankiewicz", "K. Jakubowska", "K. Jochymek", "A. Mizerska", "-", "T. Zygmunt", "-"],
+            ["3", "10:45<br>10:55", "W. Wrzaszcz", "R. Ciszewska", "I. Wilczyńska<br>D. Kolany", "M. Ankiewicz", "J. Szymkowicz", "K. Bugajska", "M. Rzepka", "-", "D. Piątek", "-"],
+            ["4", "11:40<br>11:50", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Niedbał", "O. Ginalska", "J. Wojtan", "K. Jochymek", "K. Jakubowska", "J. Hartel", "-", "-"],
+            ["5", "12:35<br>12:50", "R. Rogalski", "J. Miecznik-Warda", "A. Pierzchała-Badura<br>M. Gil", "M. Ankiewicz", "T. Majewski", "J. Wojtan", "A. Mizerska", "K. Bugajska", "-", "E. Łubińska"],
+            ["6", "13:35<br>13:50", "-", "-", "D. Gałka", "", "E. Krzyżyk", "-", "-", "M. Rzepka", "-", "A. Stankiewicz"]
+        ],
+        piatek: [
+            ["0", "8:00<br>8:10", "M. Ankiewicz", "R. Rogalski", "E. Łubińska", "-", "M. Gil", "K. Bugajska", "A. Mizerska", "-", "D. Piątek", "-"],
+            ["1", "8:55<br>9:05", "E. Szostak", "M. Szydłowska", "A. Pierzchała-Badura<br>P. Latosińska", "M. Ankiewicz", "T. Majewski", "J. Wojtan", "K. Jakubowska", "-", "T. Zygmunt", "-"],
+            ["2", "9:50<br>10:00", "ks. A. Hepek", "M. Niedbał", "A. Szydłowska<br>D. Gałka", "A. Stankiewicz", "K. Jochymek", "J. Szymkowicz", "M. Rzepka", "-", "K. Czajęcka", "-"],
+            ["3", "10:45<br>10:55", "E. Szostak", "J. Miecznik-Warda", "K. Miąsik<br>M. Piekarski", "A. Solińska", "T. Majewski", "K. Jakubowska", "A. Mizerska", "-", "K. Matysek-Sobolewska", "-"],
+            ["4", "11:40<br>11:50", "M. Niedbał", "J. Hartel", "A. Pierzchała-Badura<br>M. Gil", "O. Ginalska", "E. Krzyżyk", "K. Bugajska", "M. Rzepka", "P. Latosińska", "T. Zygmunt", "-"],
+            ["5", "12:35<br>12:50", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Piekarski", "A. Stankiewicz", "K. Jochymek", "J. Wojtan", "", "J. Hartel", "D. Piątek", "R. Ciszewska"],
+            ["6", "13:35<br>13:50", "M. Niedbał", "K. Miąsik", "E. Łubińska", "O. Ginalska", "M. Gil", "M. Rzepka", "-", "P. Latosińska", "D. Piątek", "A. Szydłowska"],
+            ["7", "14:35<br>14:40", "-", "-", "-", "-", "-", "-", "-", "-", "T. Zygmunt", "-"]
+        ]
+    };
+
+    // ============================================================
+    // LOGIKA (BEZ ZMIAN)
+    // ============================================================
+
+    function generujTabele() {
+        for (const [dzien, wiersze] of Object.entries(bazaDyzurow)) {
+            const tbody = document.getElementById(`tbody-${dzien}`);
+            if (!tbody) continue;
+            
+            tbody.innerHTML = ''; 
+            
+            wiersze.forEach(daneWiersza => {
+                const tr = document.createElement('tr');
+                
+                daneWiersza.forEach((tresc, index) => {
+                    const td = document.createElement('td');
+                    if (index === 0) td.className = "font-bold";
+                    if (index === 1) td.className = "font-medium";
+                    if (tresc === "-" || tresc.trim() === "") {
+                        td.className += " empty-cell";
+                    }
+                    td.innerHTML = tresc;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        generujTabele(); 
+
         const schedules = document.querySelectorAll('.schedule-body');
         const currentDayTitle = document.getElementById('current-day-title');
         const dayIdMap = ['niedziela', 'poniedzialek', 'wtorek', 'sroda', 'czwartek', 'piatek', 'sobota'];
         const dayNameMap = {
-            'niedziela': 'Niedziela',
-            'poniedzialek': 'Poniedziałek',
-            'wtorek': 'Wtorek',
-            'sroda': 'Środa',
-            'czwartek': 'Czwartek',
-            'piatek': 'Piątek',
-            'sobota': 'Sobota'
+            'niedziela': 'Niedziela', 'poniedzialek': 'Poniedziałek', 'wtorek': 'Wtorek',
+            'sroda': 'Środa', 'czwartek': 'Czwartek', 'piatek': 'Piątek', 'sobota': 'Sobota'
         };
 
         function highlightCurrentOrNextBreak(dayId) {
@@ -165,16 +185,12 @@
                 const timeCell = row.cells[1]; 
                 if (!timeCell) continue;
                 
-                const timeHTML = timeCell.innerHTML;
-                // Correctly format the time text for parsing
-                const timeText = timeHTML.replace('<br>', ' ');
-                // Use a regex that can handle different separators, but expect HH:MM HH:MM
+                const timeText = timeCell.innerHTML.replace('<br>', ' ');
                 const times = timeText.trim().split(/\s+/);
                 if (times.length < 2) continue;
 
                 const timeMatchStart = times[0].match(/(\d{1,2}):(\d{2})/);
                 const timeMatchEnd = times[1].match(/(\d{1,2}):(\d{2})/);
-
 
                 if (timeMatchStart && timeMatchEnd) {
                     const startHour = parseInt(timeMatchStart[1], 10);
@@ -195,24 +211,16 @@
                     }
                 }
             }
-
-            if (nextBreakRow) {
-                nextBreakRow.classList.add('highlight-row');
-            }
+            if (nextBreakRow) nextBreakRow.classList.add('highlight-row');
         }
 
         function showScheduleForDay(dayId) {
             schedules.forEach(tbody => tbody.classList.add('hidden'));
-            
             const activeTbody = document.getElementById(`tbody-${dayId}`);
-            if (activeTbody) {
-                activeTbody.classList.remove('hidden');
-            }
-
+            if (activeTbody) activeTbody.classList.remove('hidden');
             if (currentDayTitle && dayNameMap[dayId]) {
                 currentDayTitle.textContent = `Dyżury: ${dayNameMap[dayId]}`;
             }
-            
             highlightCurrentOrNextBreak(dayId);
         }
 
@@ -223,7 +231,6 @@
         setInterval(() => {
             const currentDayIndex = new Date().getDay();
             const currentDayId = (currentDayIndex === 0 || currentDayIndex === 6) ? 'poniedzialek' : dayIdMap[currentDayIndex];
-            
             const activeTbody = document.querySelector('.schedule-body:not(.hidden)');
             const activeId = activeTbody ? activeTbody.id.replace('tbody-', '') : null;
             
@@ -232,15 +239,9 @@
             } else {
                 highlightCurrentOrNextBreak(currentDayId);
             }
-        }, 30000); // Check every 30 seconds
+        }, 30000);
     });
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
