@@ -7,48 +7,101 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .header-green { background-color: #28a745; }
-        .header-purple { background-color: #6f42c1; }
-        .header-orange { background-color: #fd7e14; }
-        .header-yellow { background-color: #ffc107; color: #333; }
-        .header-red { background-color: #dc3545; }
-        .header-blue { background-color: #007bff; }
-        .header-gray { background-color: #6c757d; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f3f4f6; 
+        }
+
+        /* Kolory nagłówków */
+        .header-green { background-color: #10b981; color: white; }
+        .header-purple { background-color: #8b5cf6; color: white; }
+        .header-orange { background-color: #f97316; color: white; }
+        .header-yellow { background-color: #fbbf24; color: #111827; }
+        .header-red { background-color: #ef4444; color: white; }
+        .header-blue { background-color: #3b82f6; color: white; }
+        .header-gray { background-color: #6b7280; color: white; }
         
-        .highlight-row { background-color: #dbeafe; font-weight: 600; }
+        /* Animacja pulsowania dla aktywnej przerwy */
+        @keyframes pulse-soft {
+            0%, 100% { background-color: #dbeafe; border-left-color: #2563eb; }
+            50% { background-color: #bfdbfe; border-left-color: #60a5fa; }
+        }
+
+        .highlight-row { 
+            animation: pulse-soft 3s infinite ease-in-out;
+            font-weight: 700;
+            border-left: 4px solid #2563eb; 
+        }
         .highlight-row td { color: #1e3a8a; }
-        td.empty-cell { text-align: center; }
+
+        /* Styl czerwonej linii podczas lekcji */
+        .lesson-separator td {
+            border-bottom: 4px solid #ef4444 !important; 
+        }
+
+        td.empty-cell { text-align: center; color: #cbd5e1; }
         
         /* Stylizacja tabeli */
         .compact-table th, .compact-table td {
             padding: 6px 2px;
-            font-size: 10px;
+            font-size: 10px; 
             text-align: center;
             white-space: normal;
             word-break: break-word;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #f1f5f9;
+            border-right: 1px solid #f8fafc; 
         }
-        /* Wiersze naprzemienne dla lepszej czytelności */
-        .compact-table tbody tr:nth-child(even) { background-color: #f9fafb; }
+        
+        .compact-table tbody tr:nth-child(even) { background-color: #fafafa; }
 
-        .compact-table thead th { font-size: 9px; text-align: center; }
+        .compact-table thead th { 
+            font-size: 9px; 
+            text-align: center; 
+            border-bottom: 2px solid white; 
+        }
+
         .nr-column { width: 25px; }
         .hour-column { width: 50px; font-size: 9px !important; }
         .obiad-column { width: 75px; }
+        
         #current-day-title { font-size: 16px; }
+
+        /* Płynne przejście paska */
+        #progress-bar {
+            transition: width 1s linear, background-color 0.5s ease;
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-1">
+<body class="text-gray-800 p-2 h-screen flex flex-col items-center justify-start">
 
-    <div style="max-width: 900px;" class="mx-auto">
+    <div style="max-width: 900px;" class="w-full">
         
-        <h2 id="current-day-title" class="font-bold text-center my-3 text-blue-700"></h2>
+        <!-- NAGŁÓWEK: Tytuł dnia + Licznik czasu w jednej linii -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-2 bg-white p-2 px-4 rounded-xl shadow-sm border border-blue-100 min-h-[3.5rem]">
+            
+            <!-- Lewa strona: Nazwa dnia -->
+            <div id="current-day-title" class="font-bold text-blue-800 uppercase tracking-wide text-lg whitespace-nowrap">
+                Ładowanie...
+            </div>
 
-        <main class="bg-white rounded-lg shadow-lg overflow-hidden pb-[50px]">
+            <!-- Prawa strona: Stoper (domyślnie ukryty, pokazuje się tylko w czasie dyżurów/lekcji) -->
+            <div id="timer-container" class="flex items-center gap-4 flex-grow justify-end hidden">
+                <div class="flex flex-col items-end leading-tight">
+                    <span id="timer-label" class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Czas do końca:</span>
+                    <span id="timer-countdown" class="text-lg font-mono font-bold text-gray-700">00:00</span>
+                </div>
+                
+                <!-- Pasek Postępu -->
+                <div class="w-32 sm:w-48 md:w-64 bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progress-bar" class="bg-blue-500 h-full rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <main class="bg-white rounded-xl shadow-2xl overflow-hidden pb-[50px] border border-gray-100">
             <div>
                 <table class="w-full text-gray-700 compact-table">
-                    <thead class="text-white uppercase">
+                    <thead class="text-white uppercase tracking-wider">
                         <tr>
                             <th scope="col" class="bg-gray-700 nr-column">Nr</th>
                             <th scope="col" class="bg-gray-700 hour-column">Godzina</th>
@@ -65,7 +118,7 @@
                         </tr>
                     </thead>
                     
-                    <!-- Puste kontenery, które wypełni JavaScript -->
+                    <!-- Kontenery na dni tygodnia -->
                     <tbody id="tbody-poniedzialek" class="schedule-body hidden"></tbody>
                     <tbody id="tbody-wtorek" class="schedule-body hidden"></tbody>
                     <tbody id="tbody-sroda" class="schedule-body hidden"></tbody>
@@ -78,9 +131,8 @@
 
 <script>
     // ============================================================
-    // BAZA DYŻURÓW (ZAKTUALIZOWANA)
+    // DANE DYŻURÓW
     // ============================================================
-    
     const bazaDyzurow = {
         poniedzialek: [
             ["0", "8:00<br>8:10", "E. Szostak", "M. Szydłowska", "A. Pierzchała-Badura", "-", "J. Szymkowicz", "I. Wilczyńska", "A. Mizerska", "-", "K. Czajęcka", "-"],
@@ -110,7 +162,7 @@
             ["0", "8:00<br>8:10", "K. Matysek-Sobolewska", "M. Niedbał", "A. Stankiewicz", "-", "T. Majewski", "I. Wilczyńska", "M. Rzepka", "-", "T. Zygmunt", "-"],
             ["1", "8:55<br>9:05", "K. Matysek-Sobolewska", "R. Ciszewska", "A. Pierzchała-Badura<br>D. Gałka", "O. Ginalska", "P. Latosińska", "J. Szymkowicz", "A. Solińska", "-", "D. Piątek", "-"],
             ["2", "9:50<br>10:00", "E. Szostak", "M. Szydłowska", "A. Szydłowska<br>M. Gil", "A. Stankiewicz", "K. Jakubowska", "K. Jochymek", "A. Mizerska", "-", "T. Zygmunt", "-"],
-            ["3", "10:45<br>10:55", "W. Wrzaszcz", "R. Ciszewska", "I. Wilczyńska<br>D. Kolany", "M. Ankiewicz", "J. Szymkowicz", "K. Bugajska", "M. Rzepka", "-", "D. Piątek", "-"],
+            ["3", "10:45<br>10:55", "W. Wrzaszcz", "R. Ciszewska", "I. Wilczyńska<br>D. Kolany", "M. Ankiewicz", "J. Szymkowicz", "K. Bugajska", "M. Rzepka", "-", "K. Czajęcka", "-"],
             ["4", "11:40<br>11:50", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Niedbał", "O. Ginalska", "J. Wojtan", "K. Jochymek", "K. Jakubowska", "J. Hartel", "-", "-"],
             ["5", "12:35<br>12:50", "R. Rogalski", "J. Miecznik-Warda", "A. Pierzchała-Badura<br>M. Gil", "M. Ankiewicz", "T. Majewski", "J. Wojtan", "A. Mizerska", "K. Bugajska", "-", "E. Łubińska"],
             ["6", "13:35<br>13:50", "-", "-", "D. Gałka", "", "E. Krzyżyk", "-", "-", "M. Rzepka", "-", "A. Stankiewicz"]
@@ -127,27 +179,29 @@
         ]
     };
 
-    // ============================================================
-    // LOGIKA (BEZ ZMIAN)
-    // ============================================================
-
+    // Funkcja budująca HTML tabeli
     function generujTabele() {
         for (const [dzien, wiersze] of Object.entries(bazaDyzurow)) {
             const tbody = document.getElementById(`tbody-${dzien}`);
             if (!tbody) continue;
             
-            tbody.innerHTML = ''; 
+            tbody.innerHTML = ''; // Czyszczenie
             
             wiersze.forEach(daneWiersza => {
                 const tr = document.createElement('tr');
                 
                 daneWiersza.forEach((tresc, index) => {
                     const td = document.createElement('td');
-                    if (index === 0) td.className = "font-bold";
-                    if (index === 1) td.className = "font-medium";
+                    
+                    // Formatowanie Nr i Godziny
+                    if (index === 0) td.className = "font-bold text-gray-500"; 
+                    if (index === 1) td.className = "font-medium text-xs";
+                    
+                    // Puste komórki
                     if (tresc === "-" || tresc.trim() === "") {
                         td.className += " empty-cell";
                     }
+                    
                     td.innerHTML = tresc;
                     tr.appendChild(td);
                 });
@@ -156,6 +210,62 @@
         }
     }
 
+    // Funkcja aktualizująca pasek postępu i licznik
+    function updateTimer(startTimeInMinutes, endTimeInMinutes, isLesson) {
+        const timerContainer = document.getElementById('timer-container');
+        const progressBar = document.getElementById('progress-bar');
+        const countdownText = document.getElementById('timer-countdown');
+        const timerLabel = document.getElementById('timer-label');
+
+        // Pokaż pasek
+        timerContainer.classList.remove('hidden');
+
+        // Ustawienia tekstów i kolorów zależnie czy to lekcja czy przerwa
+        if (isLesson) {
+            timerLabel.innerText = "CZAS DO KOŃCA LEKCJI:";
+            timerLabel.classList.remove('text-blue-600');
+            timerLabel.classList.add('text-red-600');
+            progressBar.classList.remove('bg-blue-500');
+            progressBar.classList.add('bg-red-500');
+        } else {
+            timerLabel.innerText = "CZAS DO KOŃCA PRZERWY:";
+            timerLabel.classList.remove('text-red-600');
+            timerLabel.classList.add('text-blue-600');
+            progressBar.classList.remove('bg-red-500');
+            progressBar.classList.add('bg-blue-500');
+        }
+
+        // Obliczenia matematyczne czasu (PRAWIDŁOWY ZEGAR SYSTEMOWY)
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const currentSeconds = now.getSeconds();
+        
+        // Zamiana minut na sekundy dla płynności
+        const startTotalSeconds = startTimeInMinutes * 60;
+        const endTotalSeconds = endTimeInMinutes * 60;
+        const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
+        
+        const totalDurationSeconds = endTotalSeconds - startTotalSeconds;
+        const elapsedSeconds = currentTotalSeconds - startTotalSeconds;
+        const remainingSeconds = endTotalSeconds - currentTotalSeconds;
+
+        if (remainingSeconds <= 0) {
+            progressBar.style.width = '100%';
+            countdownText.innerText = "00:00";
+            return;
+        }
+
+        // Oblicz procent szerokości
+        const percentage = Math.min(100, Math.max(0, (elapsedSeconds / totalDurationSeconds) * 100));
+        progressBar.style.width = `${percentage}%`;
+        
+        // Formatowanie MM:SS
+        const m = Math.floor(remainingSeconds / 60);
+        const s = remainingSeconds % 60;
+        countdownText.innerText = `${m}:${s < 10 ? '0' + s : s}`;
+    }
+
+    // Główna logika inicjalizacji
     document.addEventListener('DOMContentLoaded', function() {
         generujTabele(); 
 
@@ -167,24 +277,36 @@
             'sroda': 'Środa', 'czwartek': 'Czwartek', 'piatek': 'Piątek', 'sobota': 'Sobota'
         };
 
-        function highlightCurrentOrNextBreak(dayId) {
+        // Funkcja sprawdzająca aktualny stan (PRAWIDŁOWY ZEGAR)
+        function updateState(dayId) {
+            // 1. Wyczyść style poprzednie
             document.querySelectorAll('.schedule-body tr').forEach(row => {
                 row.classList.remove('highlight-row');
+                row.classList.remove('lesson-separator');
             });
 
             const activeTbody = document.getElementById(`tbody-${dayId}`);
-            if (!activeTbody) return;
+            // Jeśli jest weekend lub błąd, ukryj timer i wyjdź
+            if (!activeTbody) {
+                document.getElementById('timer-container').classList.add('hidden');
+                return;
+            }
 
             const rows = activeTbody.querySelectorAll('tr');
             const now = new Date();
             const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
             
+            let activeFound = false;
             let nextBreakRow = null;
+            let previousBreakEnd = null;
+            let previousRow = null;
 
+            // Iterujemy po wierszach (przerwach) z planu
             for (const row of rows) {
                 const timeCell = row.cells[1]; 
                 if (!timeCell) continue;
                 
+                // Parsowanie godziny z komórki (np. "8:00 8:10")
                 const timeText = timeCell.innerHTML.replace('<br>', ' ');
                 const times = timeText.trim().split(/\s+/);
                 if (times.length < 2) continue;
@@ -200,46 +322,88 @@
 
                     const startTimeInMinutes = startHour * 60 + startMinute;
                     const endTimeInMinutes = endHour * 60 + endMinute;
+                    
+                    // --- SPRAWDZANIE WARUNKÓW ---
 
-                    if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes <= endTimeInMinutes) {
+                    // A. CZY TERAZ JEST PRZERWA? (Niebieski pasek)
+                    if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
                         row.classList.add('highlight-row');
-                        return; 
+                        updateTimer(startTimeInMinutes, endTimeInMinutes, false); // false = przerwa
+                        activeFound = true;
+                        return; // Znaleziono, kończymy pętlę
+                    }
+
+                    // B. CZY TERAZ JEST LEKCJA? (Czerwony pasek)
+                    // (Czas pomiędzy końcem poprzedniej przerwy a początkiem tej)
+                    if (previousBreakEnd !== null) {
+                        if (currentTimeInMinutes >= previousBreakEnd && currentTimeInMinutes < startTimeInMinutes) {
+                            // Tak, trwa lekcja
+                            if (previousRow) previousRow.classList.add('lesson-separator'); // Czerwona linia pod poprzednią przerwą
+                            
+                            updateTimer(previousBreakEnd, startTimeInMinutes, true); // true = lekcja
+                            activeFound = true;
+                            return; // Znaleziono, kończymy pętlę
+                        }
                     }
                     
+                    // Szukanie następnej przerwy (żeby zaznaczyć, jeśli nic nie jest aktywne)
                     if (nextBreakRow === null && currentTimeInMinutes < startTimeInMinutes) {
                         nextBreakRow = row;
                     }
+
+                    previousBreakEnd = endTimeInMinutes;
+                    previousRow = row;
                 }
             }
-            if (nextBreakRow) nextBreakRow.classList.add('highlight-row');
+
+            // Jeśli nie znaleziono aktywnej przerwy ani lekcji (np. jest po lekcjach)
+            if (!activeFound) {
+                document.getElementById('timer-container').classList.add('hidden');
+                // Opcjonalnie: zaznacz następną przerwę na szaro/zwykłym kolorem
+                if (nextBreakRow) nextBreakRow.classList.add('highlight-row'); 
+            }
         }
 
+        // Funkcja przełączająca widok na konkretny dzień
         function showScheduleForDay(dayId) {
             schedules.forEach(tbody => tbody.classList.add('hidden'));
             const activeTbody = document.getElementById(`tbody-${dayId}`);
-            if (activeTbody) activeTbody.classList.remove('hidden');
-            if (currentDayTitle && dayNameMap[dayId]) {
-                currentDayTitle.textContent = `Dyżury: ${dayNameMap[dayId]}`;
+            
+            if (activeTbody) {
+                activeTbody.classList.remove('hidden');
             }
-            highlightCurrentOrNextBreak(dayId);
+            
+            if (currentDayTitle && dayNameMap[dayId]) {
+                currentDayTitle.textContent = `DYŻURY: ${dayNameMap[dayId].toUpperCase()}`;
+            }
+            
+            // Od razu odśwież stan po zmianie dnia
+            updateState(dayId);
         }
 
+        // --- START APLIKACJI ---
         const todayIndex = new Date().getDay();
+        // Jeśli niedziela (0) lub sobota (6), pokaż poniedziałek, w przeciwnym razie właściwy dzień
         const defaultDayId = (todayIndex === 0 || todayIndex === 6) ? 'poniedzialek' : dayIdMap[todayIndex];
+        
         showScheduleForDay(defaultDayId);
 
+        // Pętla główna - odświeżanie co 1 sekundę
         setInterval(() => {
-            const currentDayIndex = new Date().getDay();
+            const now = new Date();
+            const currentDayIndex = now.getDay();
             const currentDayId = (currentDayIndex === 0 || currentDayIndex === 6) ? 'poniedzialek' : dayIdMap[currentDayIndex];
+            
+            // Sprawdź, czy zmienił się dzień (np. po północy)
             const activeTbody = document.querySelector('.schedule-body:not(.hidden)');
             const activeId = activeTbody ? activeTbody.id.replace('tbody-', '') : null;
             
             if (currentDayId !== activeId) {
                 showScheduleForDay(currentDayId);
             } else {
-                highlightCurrentOrNextBreak(currentDayId);
+                updateState(currentDayId);
             }
-        }, 30000);
+        }, 1000);
     });
 </script>
 
