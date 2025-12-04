@@ -3,383 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Antygravity - Redesign V4</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Panel Antygravity - Redesign V5</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
-    
     <style>
         /* --- GŁÓWNE ZMIENNE --- */
         :root {
-            --theme-title-color: #a8dadc;
-            --theme-number-color: #f1faee;
-            --theme-bg-gradient-start: #000020;
-            --theme-bg-gradient-end: #4a0d66;
-            --theme-border-color: black;
-            --theme-star-color: white;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+            --theme-title-color: #fff;
+            --theme-text-color: #333;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            --accent-color: #d63384;
+            --dice-bg: #fff;
+            --dice-dot: #333;
         }
-
         body {
-            margin: 0; overflow: hidden; background-color: #e0e0e0;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Roboto', sans-serif; color: #333; height: 100vh;
-            background-image: radial-gradient(#444 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        #main-wrapper {
-            width: 700px; height: 320px;
-            position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            background-color: #fff;
-            border-radius: 20px; overflow: hidden;
-        }
-        
-        /* --- UKŁAD WIDOKÓW --- */
-        .view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: row;
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.6s ease-in-out;
-            background-color: #fff;
-            opacity: 1; 
-            z-index: 0;
-        }
-        
-        .view.active { opacity: 1; z-index: 10; transform: translateY(0); }
-        .view.inactive { opacity: 0; z-index: 0; transform: translateY(100%); }
-        
-        /* =========================================
-           WIDOK A: ZEGAR I GRA
-           ========================================= */
-        #view-a { background-color: #f9f9f9; }
-        .panel { flex: 1; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; align-items: center; }
-        
-        #left-panel { background-color: #fdfdfd; border-right: 1px solid #eee; }
-        #right-panel { background-color: #fff; }
-        
-        /* Zegar */
-        #clock-container { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; text-align: center; }
-        #dayofweek { font-family: 'Oswald', sans-serif; font-size: 1.2em; color: #888; text-transform: uppercase; letter-spacing: 2px; }
-        #current-date { font-size: 1.2em; color: #444; margin-bottom: 10px; font-weight: 700; }
-        #current-time { font-family: 'Oswald', sans-serif; font-size: 3.5em; font-weight: 400; color: #222; letter-spacing: 1px; }
-
-        /* Szczęśliwy Numer */
-        #lucky-number-container {
-            width: 100%; height: 100%; position: relative; display: flex; flex-direction: column;
-            align-items: center; border: 6px solid var(--theme-border-color);
-            box-shadow: 5px 5px 0px rgba(0,0,0,0.2); overflow: hidden; padding: 5px; box-sizing: border-box;
-            background: linear-gradient(135deg, var(--theme-bg-gradient-start) 0%, var(--theme-bg-gradient-end) 100%);
-            color: var(--theme-number-color); border-radius: 12px;
-        }
-        #lucky-number-container .title {
-            font-family: 'Bangers', cursive; font-size: 1.8em; line-height: 1.1; margin: 10px 0;
-            -webkit-text-stroke: 1px black; color: var(--theme-title-color); z-index: 10;
-        }
-        #lucky-content-wrapper { display: flex; flex-direction: row; justify-content: space-around; align-items: center; width: 100%; flex-grow: 1; }
-        #lucky-dice-column { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-
-        #lucky-dice-column.three-dice-layout { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 5px; }
-        #lucky-dice-column.three-dice-layout .dice:nth-child(3) { grid-row: 1 / 3; grid-column: 2 / 3; align-self: center; justify-self: center; }
-
-        #lucky-number-text {
-            font-family: 'Bangers', cursive; font-size: 6em; line-height: 1; margin: 0;
-            -webkit-text-stroke: 2px black; text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
-            color: var(--theme-number-color); z-index: 10;
-        }
-        
-        .dice { width: 40px; height: 40px; background: white; border: 2px solid black; border-radius: 6px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 4px; box-sizing: border-box; }
-        .dot { width: 8px; height: 8px; background: black; border-radius: 50%; align-self: center; justify-self: center; }
-        
-        /* Style kropek (uniwersalne) */
-        .dice.value-1 .dot:nth-child(1) { grid-area: 2 / 2; }
-        .dice.value-2 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-2 .dot:nth-child(2) { grid-area: 3 / 3; }
-        .dice.value-3 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-3 .dot:nth-child(2) { grid-area: 2 / 2; } .dice.value-3 .dot:nth-child(3) { grid-area: 3 / 3; }
-        .dice.value-4 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-4 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-4 .dot:nth-child(3) { grid-area: 3 / 1; } .dice.value-4 .dot:nth-child(4) { grid-area: 3 / 3; }
-        .dice.value-5 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-5 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-5 .dot:nth-child(3) { grid-area: 2 / 2; } .dice.value-5 .dot:nth-child(4) { grid-area: 3 / 1; } .dice.value-5 .dot:nth-child(5) { grid-area: 3 / 3; }
-        .dice.value-6 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-6 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-6 .dot:nth-child(3) { grid-area: 2 / 1; } .dice.value-6 .dot:nth-child(4) { grid-area: 2 / 3; } .dice.value-6 .dot:nth-child(5) { grid-area: 3 / 1; } .dice.value-6 .dot:nth-child(6) { grid-area: 3 / 3; }
-
-        /* =========================================
-           WIDOK B: CIEKAWOSTKI
-           ========================================= */
-        #view-b { 
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Roboto', sans-serif;
+            color: var(--theme-text-color);
+            height: 100vh;
+            /* Globalny animowany gradient */
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
             animation: gradientMove 15s ease infinite;
-            padding: 0;
-            display: flex; justify-content: center; align-items: center;
         }
-
         @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
-
-        .history-card {
-            display: flex; width: 92%; height: 88%;
-            background: rgba(255, 255, 255, 0.75);
+        #main-wrapper {
+            width: 750px;
+            height: 350px;
+            position: relative;
+            /* Usunięto tło, teraz jest przezroczyste/szklane */
+            background: transparent;
             border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: var(--glass-border); overflow: hidden; position: relative;
+            /* overflow: hidden; - usunięte, żeby cienie ładnie wychodziły, ale content przycięty w widokach */
         }
-
+        /* --- UKŁAD WIDOKÓW --- */
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            pointer-events: none;
+        }
+        .view.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+            z-index: 10;
+        }
+        /* Wspólny styl dla szklanych paneli */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+        }
+        /* =========================================
+           WIDOK A: ZEGAR I GRA (Nowy Glassmorphism)
+           ========================================= */
+        #view-a {
+            gap: 20px;
+            /* Odstęp między panelami */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .panel-a {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        #clock-panel {
+            flex: 1.2;
+            /* Trochę szerszy */
+            padding: 20px;
+        }
+        #game-panel {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            /* Nieco jaśniejszy */
+        }
+        /* Zegar */
+        #dayofweek {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.4em;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+        #current-date {
+            font-size: 1.3em;
+            color: #444;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        #current-time {
+            font-family: 'Oswald', sans-serif;
+            font-size: 5em;
+            font-weight: 500;
+            color: #222;
+            line-height: 1;
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
+        }
+        /* Szczęśliwy Numer */
+        .game-title {
+            font-family: 'Bangers', cursive;
+            font-size: 2em;
+            color: #222;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+        }
+        #lucky-content-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+        }
+        #lucky-dice-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            animation: float 4s ease-in-out infinite;
+        }
+        #lucky-number-text {
+            font-family: 'Bangers', cursive;
+            font-size: 7em;
+            line-height: 1;
+            margin: 0;
+            color: var(--accent-color);
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+            transform: rotate(-5deg);
+        }
+        .dice {
+            width: 45px;
+            height: 45px;
+            background: var(--dice-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            padding: 4px;
+            box-sizing: border-box;
+        }
+        .dot {
+            width: 9px;
+            height: 9px;
+            background: var(--dice-dot);
+            border-radius: 50%;
+            align-self: center;
+            justify-self: center;
+            box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        /* Style kropek kostki */
+        .dice.value-1 .dot:nth-child(1) {
+            grid-area: 2 / 2;
+        }
+        .dice.value-2 .dot:nth-child(1) {
+            grid-area: 1 / 1;
+        }
+        .dice.value-2 .dot:nth-child(2) {
+            grid-area: 3 / 3;
+        }
+        .dice.value-3 .dot:nth-child(1) {
+            grid-area: 1 / 1;
+        }
+        .dice.value-3 .dot:nth-child(2) {
+            grid-area: 2 / 2;
+        }
+        .dice.value-3 .dot:nth-child(3) {
+            grid-area: 3 / 3;
+        }
+        .dice.value-4 .dot:nth-child(1) {
+            grid-area: 1 / 1;
+        }
+        .dice.value-4 .dot:nth-child(2) {
+            grid-area: 1 / 3;
+        }
+        .dice.value-4 .dot:nth-child(3) {
+            grid-area: 3 / 1;
+        }
+        .dice.value-4 .dot:nth-child(4) {
+            grid-area: 3 / 3;
+        }
+        .dice.value-5 .dot:nth-child(1) {
+            grid-area: 1 / 1;
+        }
+        .dice.value-5 .dot:nth-child(2) {
+            grid-area: 1 / 3;
+        }
+        .dice.value-5 .dot:nth-child(3) {
+            grid-area: 2 / 2;
+        }
+        .dice.value-5 .dot:nth-child(4) {
+            grid-area: 3 / 1;
+        }
+        .dice.value-5 .dot:nth-child(5) {
+            grid-area: 3 / 3;
+        }
+        .dice.value-6 .dot:nth-child(1) {
+            grid-area: 1 / 1;
+        }
+        .dice.value-6 .dot:nth-child(2) {
+            grid-area: 1 / 3;
+        }
+        .dice.value-6 .dot:nth-child(3) {
+            grid-area: 2 / 1;
+        }
+        .dice.value-6 .dot:nth-child(4) {
+            grid-area: 2 / 3;
+        }
+        .dice.value-6 .dot:nth-child(5) {
+            grid-area: 3 / 1;
+        }
+        .dice.value-6 .dot:nth-child(6) {
+            grid-area: 3 / 3;
+        }
+        /* =========================================
+           WIDOK B: CIEKAWOSTKI
+           ========================================= */
+        #view-b {
+            padding: 0;
+        }
+        .history-card {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* Dziedziczy glass-panel */
+        }
         .card-image-wrapper {
-            flex: 0 0 45%; position: relative; overflow: hidden; background-color: #000;
+            flex: 0 0 40%;
+            position: relative;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.1);
         }
-
         .card-image {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform 12s ease; opacity: 0.9;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 12s ease;
+            opacity: 0.95;
         }
-
-        .view.active .card-image { transform: scale(1.15); }
-        .card-image-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent); pointer-events: none;
+        .view.active .card-image {
+            transform: scale(1.15);
         }
-
         .card-content {
-            flex: 1; padding: 30px; display: flex; flex-direction: column;
-            justify-content: center; position: relative; z-index: 1;
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
         }
-
         .watermark-year {
-            position: absolute; bottom: -30px; right: -10px;
-            font-family: 'Bangers', cursive; font-size: 10em;
-            color: rgba(0,0,0,0.06); pointer-events: none; user-select: none; z-index: -1; line-height: 1;
+            position: absolute;
+            bottom: -20px;
+            right: 10px;
+            font-family: 'Bangers', cursive;
+            font-size: 12em;
+            color: rgba(0, 0, 0, 0.04);
+            pointer-events: none;
+            user-select: none;
+            z-index: -1;
+            line-height: 1;
         }
-
         .card-header-label {
-            font-family: 'Oswald', sans-serif; font-size: 1.0em; font-weight: 500;
-            color: #d63384; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
         }
-
         .card-header-date {
-            font-family: 'Oswald', sans-serif; font-size: 2.2em; color: #222; font-weight: 500;
-            margin-bottom: 15px; line-height: 1.1; border-bottom: 3px solid #d63384;
-            display: inline-block; padding-bottom: 5px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5em;
+            color: #222;
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            border-bottom: 4px solid var(--accent-color);
+            display: inline-block;
+            padding-bottom: 5px;
         }
-
         .card-text {
-            font-family: 'Roboto', sans-serif; font-size: 1.4em; line-height: 1.5;
-            color: #333; font-weight: 300;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.5em;
+            line-height: 1.6;
+            color: #333;
+            font-weight: 300;
         }
-
-        @media (max-width: 600px) {
-            #main-wrapper { width: 95%; height: 550px; }
-            .history-card { flex-direction: column; }
-            .card-image-wrapper { flex: 0 0 200px; }
-            .watermark-year { font-size: 6em; bottom: 10px; right: 10px; }
-            .card-header-date { font-size: 1.8em; }
-            .card-content { padding: 20px; justify-content: flex-start; }
-            .card-text { font-size: 1.2em; }
+        @media (max-width: 768px) {
+            #main-wrapper {
+                width: 95%;
+                height: 600px;
+            }
+            .view {
+                flex-direction: column;
+            }
+            #view-a {
+                flex-direction: column;
+            }
+            .history-card {
+                flex-direction: column;
+            }
+            .card-image-wrapper {
+                flex: 0 0 250px;
+            }
+            .card-content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div id="main-wrapper">
-        
-        <!-- WIDOK A: ZEGAR + NUMER -->
+        <!-- WIDOK A: ZEGAR + NUMER (Zmodernizowany) -->
         <div id="view-a" class="view active">
-            <div id="left-panel" class="panel">
-                <div id="clock-container">
-                    <div id="dayofweek">...</div>
-                    <div id="current-date">...</div>
-                    <div id="current-time">00:00</div>
-                </div>
+            <div id="clock-panel" class="glass-panel panel-a">
+                <div id="dayofweek">...</div>
+                <div id="current-date">...</div>
+                <div id="current-time">00:00</div>
             </div>
-            <div id="right-panel" class="panel">
-                <div id="lucky-number-container">
-                    <h2 class="title">Lucky Number</h2>
-                    <div id="lucky-content-wrapper">
-                        <div id="lucky-dice-column"></div>
-                        <div id="lucky-number-text">?</div>
+            <div id="game-panel" class="glass-panel panel-a">
+                <div class="game-title">Lucky Number</div>
+                <div id="lucky-content-wrapper">
+                    <div id="lucky-dice-column">
+                        <!-- Kostki będą generowane przez JS -->
                     </div>
+                    <div id="lucky-number-text">?</div>
                 </div>
             </div>
         </div>
-
-        <!-- WIDOK B: CIEKAWOSTKI (NOWY) -->
-        <div id="view-b" class="view inactive">
-            <div class="history-card">
+        <!-- WIDOK B: CIEKAWOSTKI -->
+        <div id="view-b" class="view">
+            <div class="history-card glass-panel">
                 <div class="card-image-wrapper">
-                    <img id="history-img" class="card-image" src="" alt="Ciekawostka" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://placehold.co/600x400/png?text=Brak+Grafiki';">
-                    <div class="card-image-overlay"></div>
+                    <img id="history-img" class="card-image" src="" alt="Ciekawostka" referrerpolicy="no-referrer">
                 </div>
                 <div class="card-content">
-                    <div class="watermark-year" id="history-bg-year">2023</div>
-                    <div class="card-header-label">Czy wiesz, że...</div>
+                    <div class="watermark-year" id="history-bg-year">----</div>
+                    <div class="card-header-label" id="card-header-label">Czy wiesz, że...</div>
                     <div class="card-header-date" id="dynamic-header-date">...</div>
-                    <div class="card-text" id="history-text-content">Ładowanie...</div>
+                    <div class="card-text" id="history-text-content">Pobieranie danych...</div>
                 </div>
             </div>
         </div>
-
     </div>
-
     <script>
-        // --- BAZA DANYCH ---
-        const FIXED_DATABASE = {
-            "11-25": [
-                { 
-                    year: "1902", 
-                    text: "Dziś Dzień Pluszowego Misia! Pierwszy pluszak Teddy powstał w USA dokładnie w 1902 roku.",
-                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TeddyBear.jpg/640px-TeddyBear.jpg"
-                },
-                { 
-                    year: "1915", 
-                    text: "Albert Einstein przedstawił Ogólną Teorię Względności. To ona wyjaśnia, jak działa grawitacja!",
-                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg/640px-Einstein_1921_by_F_Schmutzer_-_restoration.jpg"
-                }
-            ],
-            "12-04": [
-                {
-                    year: "BARBÓRKA",
-                    text: "Dziś Barbórka! Tradycyjne święto górników, geologów i innych osób wydobywających skarby Ziemi.",
-                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Orkiestra_Gornicza_Sanok_2013.JPG/640px-Orkiestra_Gornicza_Sanok_2013.JPG"
-                }
-            ],
-            "12-17": [
-                { 
-                    year: "1903", 
-                    text: "Bracia Wright dokonali pierwszego lotu samolotem. Trwał 12 sekund, ale zmienił historię świata.",
-                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Wright_First_Flight_1903.jpg/800px-Wright_First_Flight_1903.jpg" 
-                },
-                { 
-                    year: "1989", 
-                    text: "Wyemitowano pierwszy odcinek Simpsonów. To najdłużej nadawany serial animowany w historii.",
-                    img: "https://images.unsplash.com/photo-1535378437327-1e1b8b871c53?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                }
-            ],
-            "12-19": [
-                {
-                    year: "1843",
-                    text: "Charles Dickens wydał 'Opowieść wigilijną'. To historia o magii Świąt, którą zna cały świat.",
-                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Dickens_Gurney.jpg/640px-Dickens_Gurney.jpg"
-                }
-            ]
+        // --- KONFIGURACJA ---
+        const CONFIG = {
+            viewDuration: 10000, // 10 sekund na widok
+            apiLanguage: 'pl'
         };
-
-        const RANDOM_FACTS = [
-            { year: "CIEKAWOSTKA", text: "Najkrótsza wojna w historii trwała 38 minut (Wielka Brytania vs Zanzibar, 1896).", img: "https://images.unsplash.com/photo-1529480790163-f27303c20c02?auto=format&fit=crop&w=600&q=80" },
-            { year: "KOSMOS", text: "Jowisz jest tak duży, że zmieściłby w sobie wszystkie inne planety Układu Słonecznego.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/640px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg" },
-            { year: "NATURA", text: "Ośmiornice mają trzy serca i niebieską krew. Są jednymi z najinteligentniejszych zwierząt.", img: "https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=600&q=80" }
+        // --- BAZA DANYCH ŚWIĄT I DNI NIETYPOWYCH (EDUKACYJNE/DLA DZIECI) ---
+        // Format: "MM-DD": { title: "Tytuł Święta", text: "Opis...", img: "URL" }
+        const SPECIAL_DAYS = {
+            "12-04": {
+                title: "Barbórka",
+                text: "Dziś Barbórka! To tradycyjne święto górników, geologów i wszystkich, którzy wydobywają skarby z wnętrza Ziemi. Górnicy noszą wtedy galowe mundury z czako i pióropuszem!",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Orkiestra_Gornicza_Sanok_2013.JPG/640px-Orkiestra_Gornicza_Sanok_2013.JPG"
+            },
+            "12-06": {
+                title: "Mikołajki",
+                text: "Dziś Mikołajki! Święty Mikołaj odwiedza grzeczne dzieci i zostawia im drobne upominki w butach lub pod poduszką.",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Jonathan_G_Meath_portrays_Santa_Claus.jpg/640px-Jonathan_G_Meath_portrays_Santa_Claus.jpg"
+            },
+            "06-01": {
+                title: "Dzień Dziecka",
+                text: "Wszystkiego najlepszego! Dziś Międzynarodowy Dzień Dziecka – czas zabawy, radości i uśmiechu.",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TeddyBear.jpg/640px-TeddyBear.jpg"
+            },
+            "03-21": {
+                title: "Pierwszy Dzień Wiosny",
+                text: "Dziś witamy Wiosnę! Przyroda budzi się do życia, a dni stają się coraz dłuższe i cieplejsze.",
+                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Spring_blooms.jpg/640px-Spring_blooms.jpg"
+            }
+        };
+        // --- FILTR BEZPIECZEŃSTWA (SŁOWA ZAKAZANE) ---
+        const BAD_WORDS = [
+            "zginął", "zmarł", "śmierć", "zabity", "morderstw", "wojna", "bitwa", "atak", "zamach",
+            "krwaw", "ofiar", "eksplozj", "katastrof", "hitler", "nazi", "areszt", "więzien", "skazan"
         ];
-
-        const VIEW_DURATION = 8000;
-        let currentView = 'A';
-        let todaysEvents = []; 
+        // --- DANE ZAPASOWE (FALLBACK - EDUKACYJNE) ---
+        const FALLBACK_DATA = [
+            { year: "1903", text: "Bracia Wright dokonali pierwszego udanego lotu samolotem, spełniając marzenie o lataniu.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Wright_First_Flight_1903.jpg/800px-Wright_First_Flight_1903.jpg" },
+            { year: "1969", text: "Neil Armstrong jako pierwszy człowiek stanął na Księżycu. Powiedział: 'To mały krok dla człowieka, ale wielki skok dla ludzkości'.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Aldrin_Apollo_11_original.jpg/640px-Aldrin_Apollo_11_original.jpg" },
+            { year: "1452", text: "Urodził się Leonardo da Vinci – genialny artysta i wynalazca, który namalował 'Mona Lisę'.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Leonardo_self.jpg/640px-Leonardo_self.jpg" }
+        ];
+        // --- ZMIENNE STANU ---
+        let currentView = 'a'; // 'a' lub 'b'
+        let historyEvents = [];
         let currentEventIndex = 0;
-        
-        function updateDateTime() {
-            try {
-                const now = new Date();
-                const timeEl = document.getElementById('current-time');
-                if(timeEl) {
-                    timeEl.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
-                    document.getElementById('current-date').textContent = now.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
-                    document.getElementById('dayofweek').textContent = now.toLocaleDateString('pl-PL', { weekday: 'long' });
-                }
-            } catch(e) { console.error(e); }
-        }
-
-        function updateLuckyNumber() {
+        // --- FUNKCJE POMOCNICZE ---
+        const getEl = (id) => document.getElementById(id);
+        // --- ZEGAR ---
+        function updateClock() {
             const now = new Date();
-            const seed = now.getDate() + now.getMonth(); 
-            const luckyNum = (seed % 18) + 1; 
-            
-            const numText = document.getElementById('lucky-number-text');
-            const diceCol = document.getElementById('lucky-dice-column');
-            
-            if(numText) numText.textContent = luckyNum;
-            
-            if(diceCol) {
-                diceCol.innerHTML = '';
-                let diceValues = [];
-                if(luckyNum <= 6) diceValues = [luckyNum];
-                else if(luckyNum <= 12) diceValues = [6, luckyNum-6].sort((a,b)=>a-b);
-                else diceValues = [6, 6, luckyNum-12].sort((a,b)=>a-b);
-                
-                diceCol.className = '';
-                if(diceValues.length === 1) diceCol.classList.add('one-dice-layout');
-                else if(diceValues.length === 2) diceCol.classList.add('two-dice-layout');
-                else diceCol.classList.add('three-dice-layout');
-                
-                diceValues.forEach(val => {
-                    const d = document.createElement('div');
-                    d.className = `dice value-${val}`;
-                    for(let i=0; i<val; i++) d.appendChild(document.createElement('div')).className='dot';
-                    diceCol.appendChild(d);
-                });
+            const days = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
+            const months = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+            getEl('dayofweek').textContent = days[now.getDay()];
+            getEl('current-date').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            getEl('current-time').textContent = `${hours}:${minutes}`;
+        }
+        // --- KOSTKI I SZCZĘŚLIWY NUMER ---
+        function createDice(value) {
+            const dice = document.createElement('div');
+            dice.className = `dice value-${value}`;
+            for (let i = 0; i < value; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dice.appendChild(dot);
             }
+            return dice;
         }
-
-        function initHistoryData() {
+        function rollDice() {
+            const diceContainer = getEl('lucky-dice-column');
+            diceContainer.innerHTML = '';
+            const d1 = Math.floor(Math.random() * 6) + 1;
+            const d2 = Math.floor(Math.random() * 6) + 1;
+            const sum = d1 + d2;
+            diceContainer.appendChild(createDice(d1));
+            diceContainer.appendChild(createDice(d2));
+            getEl('lucky-number-text').textContent = sum;
+        }
+        // --- WIKIPEDIA API & CONTENT LOGIC ---
+        async function fetchHistory() {
             const now = new Date();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
             const dateKey = `${month}-${day}`;
-            
-            if (FIXED_DATABASE[dateKey]) {
-                todaysEvents = FIXED_DATABASE[dateKey];
-            } else {
-                todaysEvents = RANDOM_FACTS;
-            }
-            currentEventIndex = 0; 
-        }
-
-        function renderNextFact() {
-            const now = new Date();
-            const options = { day: 'numeric', month: 'long' };
-            const dateString = now.toLocaleDateString('pl-PL', options).toUpperCase();
-            
-            const headerDate = document.getElementById('dynamic-header-date');
-            const contentText = document.getElementById('history-text-content');
-            const bgYear = document.getElementById('history-bg-year');
-            const imgEl = document.getElementById('history-img');
-
-            if (todaysEvents.length > 0) {
-                const event = todaysEvents[currentEventIndex];
-                const yearStr = event.year;
-                headerDate.textContent = `${dateString} | ${yearStr}`;
-                bgYear.textContent = /^\d+$/.test(yearStr) ? yearStr : "";
-                contentText.textContent = event.text;
-
-                if (event.img) {
-                    imgEl.src = event.img;
-                } else {
-                    imgEl.src = `https://placehold.co/600x400/png?text=Historia+${yearStr}`;
+            // 1. POBIERZ DANE Z WIKIPEDII (ZAWSZE)
+            const apiURL = `https://pl.wikipedia.org/api/rest_v1/feed/onthisday/selected/${now.getMonth() + 1}/${now.getDate()}`;
+            let apiEvents = [];
+            try {
+                const response = await fetch(apiURL);
+                const data = await response.json();
+                if (data && data.selected && data.selected.length > 0) {
+                    // Filtrowanie: musi mieć obrazek, krótki tekst i NIE zawierać złych słów
+                    const safeEvents = data.selected.filter(e => {
+                        const hasImage = e.pages && e.pages[0].thumbnail;
+                        const isShort = e.text.length < 250;
+                        const textLower = e.text.toLowerCase();
+                        const isSafe = !BAD_WORDS.some(bad => textLower.includes(bad));
+                        return hasImage && isShort && isSafe;
+                    });
+                    if (safeEvents.length > 0) {
+                        apiEvents = safeEvents.map(e => ({
+                            year: e.year,
+                            text: e.text,
+                            // Lepszy regex do zmiany rozmiaru miniatury na większą (np. 800px)
+                            img: e.pages[0].thumbnail.source.replace(/\/\d+px-/, '/800px-')
+                        }));
+                    }
                 }
-
-                currentEventIndex = (currentEventIndex + 1) % todaysEvents.length;
+            } catch (error) {
+                console.error("Błąd API Wikipedii:", error);
             }
-        }
-
-        function switchView() {
-            const va = document.getElementById('view-a');
-            const vb = document.getElementById('view-b');
-            
-            if(currentView === 'A') {
-                renderNextFact();
-                va.classList.remove('active'); va.classList.add('inactive');
-                vb.classList.remove('inactive'); vb.classList.add('active');
-                currentView = 'B';
+            // 2. SPRAWDŹ CZY DZIŚ JEST ŚWIĘTO I DODAJ NA POCZĄTEK
+            if (SPECIAL_DAYS[dateKey]) {
+                const special = SPECIAL_DAYS[dateKey];
+                const specialEvent = {
+                    year: "ŚWIĘTO",
+                    text: special.text,
+                    img: special.img,
+                    isSpecial: true,
+                    title: special.title
+                };
+                // Dodaj święto na początek listy
+                historyEvents = [specialEvent, ...apiEvents];
             } else {
-                vb.classList.remove('active'); vb.classList.add('inactive');
-                va.classList.remove('inactive'); va.classList.add('active');
-                currentView = 'A';
+                historyEvents = apiEvents;
+            }
+            // 3. FALLBACK (Jeśli nadal pusto)
+            if (historyEvents.length === 0) {
+                historyEvents = FALLBACK_DATA;
             }
         }
-
-        updateDateTime();
-        updateLuckyNumber();
-        initHistoryData();
-        
-        setInterval(updateDateTime, 1000);
-        setInterval(switchView, VIEW_DURATION);
-
+        function updateHistoryView() {
+            if (historyEvents.length === 0) return;
+            const event = historyEvents[currentEventIndex];
+            // Jeśli mamy więcej niż 1 event, cyklujemy. Jeśli to święto (1 event), to zostanie.
+            if (historyEvents.length > 1) {
+                currentEventIndex = (currentEventIndex + 1) % historyEvents.length;
+            }
+            getEl('history-img').src = event.img;
+            if (event.isSpecial) {
+                // Tryb Święta
+                getEl('history-bg-year').textContent = ""; // Ukryj rok w tle
+                getEl('dynamic-header-date').textContent = event.title.toUpperCase();
+                getEl('card-header-label').textContent = "DZIŚ OBCHODZIMY";
+            } else {
+                // Tryb Historyczny
+                getEl('history-bg-year').textContent = event.year;
+                getEl('dynamic-header-date').textContent = `${event.year}`;
+                getEl('card-header-label').textContent = "KARTKA Z KALENDARZA";
+            }
+            getEl('history-text-content').textContent = event.text;
+        }
+        // --- CYKL WIDOKÓW ---
+        function switchView() {
+            const viewA = getEl('view-a');
+            const viewB = getEl('view-b');
+            if (currentView === 'a') {
+                viewA.classList.remove('active');
+                setTimeout(() => {
+                    updateHistoryView();
+                    viewB.classList.add('active');
+                }, 400);
+                currentView = 'b';
+            } else {
+                viewB.classList.remove('active');
+                setTimeout(() => {
+                    rollDice();
+                    viewA.classList.add('active');
+                }, 400);
+                currentView = 'a';
+            }
+        }
+        // --- INICJALIZACJA ---
+        async function init() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            rollDice();
+            await fetchHistory();
+            if (historyEvents.length > 0) updateHistoryView();
+            setInterval(switchView, CONFIG.viewDuration);
+        }
+        init();
     </script>
 </body>
 </html>
