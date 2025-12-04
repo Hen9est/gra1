@@ -23,13 +23,12 @@
             margin: 0; overflow: hidden; background-color: #e0e0e0;
             display: flex; justify-content: center; align-items: center;
             font-family: 'Roboto', sans-serif; color: #333; height: 100vh;
-            /* Tło całego ekranu (poza panelem) */
             background-image: radial-gradient(#444 1px, transparent 1px);
             background-size: 20px 20px;
         }
 
         #main-wrapper {
-            width: 700px; height: 320px; /* Nieco powiększony dla lepszego efektu */
+            width: 700px; height: 320px;
             position: relative;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             background-color: #fff;
@@ -40,7 +39,7 @@
         .view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: row;
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.6s ease-in-out; /* Bardziej sprężysta animacja */
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.6s ease-in-out;
             background-color: #fff;
             opacity: 1; 
             z-index: 0;
@@ -50,7 +49,7 @@
         .view.inactive { opacity: 0; z-index: 0; transform: translateY(100%); }
         
         /* =========================================
-           WIDOK A: ZEGAR I GRA (Klasyczny styl)
+           WIDOK A: ZEGAR I GRA
            ========================================= */
         #view-a { background-color: #f9f9f9; }
         .panel { flex: 1; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; align-items: center; }
@@ -91,7 +90,8 @@
         
         .dice { width: 40px; height: 40px; background: white; border: 2px solid black; border-radius: 6px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 4px; box-sizing: border-box; }
         .dot { width: 8px; height: 8px; background: black; border-radius: 50%; align-self: center; justify-self: center; }
-        /* Style kropek kostki (skrócone dla przejrzystości, działają tak samo) */
+        
+        /* Style kropek (uniwersalne) */
         .dice.value-1 .dot:nth-child(1) { grid-area: 2 / 2; }
         .dice.value-2 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-2 .dot:nth-child(2) { grid-area: 3 / 3; }
         .dice.value-3 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-3 .dot:nth-child(2) { grid-area: 2 / 2; } .dice.value-3 .dot:nth-child(3) { grid-area: 3 / 3; }
@@ -100,17 +100,14 @@
         .dice.value-6 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-6 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-6 .dot:nth-child(3) { grid-area: 2 / 1; } .dice.value-6 .dot:nth-child(4) { grid-area: 2 / 3; } .dice.value-6 .dot:nth-child(5) { grid-area: 3 / 1; } .dice.value-6 .dot:nth-child(6) { grid-area: 3 / 3; }
 
         /* =========================================
-           WIDOK B: CIEKAWOSTKI (NOWY DESIGN)
+           WIDOK B: CIEKAWOSTKI
            ========================================= */
         #view-b { 
-            /* Animowany gradient w tle */
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
             animation: gradientMove 15s ease infinite;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
 
         @keyframes gradientMove {
@@ -119,105 +116,57 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Szklana karta */
         .history-card {
-            display: flex;
-            width: 92%;
-            height: 88%;
-            background: rgba(255, 255, 255, 0.75); /* Półprzezroczyste białe */
+            display: flex; width: 92%; height: 88%;
+            background: rgba(255, 255, 255, 0.75);
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: var(--glass-border);
-            overflow: hidden;
-            position: relative;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border); overflow: hidden; position: relative;
         }
 
-        /* Lewa strona - Obrazek */
         .card-image-wrapper {
-            flex: 0 0 45%; /* 45% szerokości */
-            position: relative;
-            overflow: hidden;
-            background-color: #000;
+            flex: 0 0 45%; position: relative; overflow: hidden; background-color: #000;
         }
 
         .card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 12s ease; /* Bardzo powolny zoom */
-            opacity: 0.9;
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 12s ease; opacity: 0.9;
         }
 
-        /* Efekt Ken Burns (zoom) gdy widok jest aktywny */
-        .view.active .card-image {
-            transform: scale(1.15);
-        }
-
-        /* Ciemny gradient na dole obrazka (dla stylu) */
+        .view.active .card-image { transform: scale(1.15); }
         .card-image-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
-            pointer-events: none;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent); pointer-events: none;
         }
 
-        /* Prawa strona - Treść */
         .card-content {
-            flex: 1;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
+            flex: 1; padding: 30px; display: flex; flex-direction: column;
+            justify-content: center; position: relative; z-index: 1;
         }
 
-        /* Znak wodny (Rok w tle) */
         .watermark-year {
-            position: absolute;
-            bottom: -30px;
-            right: -10px;
-            font-family: 'Bangers', cursive;
-            font-size: 10em;
-            color: rgba(0,0,0,0.06); /* Bardzo delikatny */
-            pointer-events: none;
-            user-select: none;
-            z-index: -1;
-            line-height: 1;
+            position: absolute; bottom: -30px; right: -10px;
+            font-family: 'Bangers', cursive; font-size: 10em;
+            color: rgba(0,0,0,0.06); pointer-events: none; user-select: none; z-index: -1; line-height: 1;
         }
 
         .card-header-label {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.0em;
-            font-weight: 500;
-            color: #d63384; /* Różowy akcent */
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
+            font-family: 'Oswald', sans-serif; font-size: 1.0em; font-weight: 500;
+            color: #d63384; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px;
         }
 
         .card-header-date {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2.2em;
-            color: #222;
-            font-weight: 500;
-            margin-bottom: 15px;
-            line-height: 1.1;
-            border-bottom: 3px solid #d63384;
-            display: inline-block;
-            padding-bottom: 5px;
+            font-family: 'Oswald', sans-serif; font-size: 2.2em; color: #222; font-weight: 500;
+            margin-bottom: 15px; line-height: 1.1; border-bottom: 3px solid #d63384;
+            display: inline-block; padding-bottom: 5px;
         }
 
         .card-text {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1.4em;
-            line-height: 1.5;
-            color: #333;
-            font-weight: 300;
+            font-family: 'Roboto', sans-serif; font-size: 1.4em; line-height: 1.5;
+            color: #333; font-weight: 300;
         }
 
-        /* Mobile */
         @media (max-width: 600px) {
             #main-wrapper { width: 95%; height: 550px; }
             .history-card { flex-direction: column; }
@@ -255,22 +204,15 @@
         <!-- WIDOK B: CIEKAWOSTKI (NOWY) -->
         <div id="view-b" class="view inactive">
             <div class="history-card">
-                <!-- Lewa strona: Obrazek -->
                 <div class="card-image-wrapper">
-                    <img id="history-img" class="card-image" src="" alt="Ciekawostka">
+                    <img id="history-img" class="card-image" src="" alt="Ciekawostka" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://placehold.co/600x400/png?text=Brak+Grafiki';">
                     <div class="card-image-overlay"></div>
                 </div>
-
-                <!-- Prawa strona: Treść -->
                 <div class="card-content">
                     <div class="watermark-year" id="history-bg-year">2023</div>
-                    
                     <div class="card-header-label">Czy wiesz, że...</div>
-                    <div class="card-header-date" id="dynamic-header-date">17 GRUDNIA 1903</div>
-                    
-                    <div class="card-text" id="history-text-content">
-                        Ładowanie danych historycznych...
-                    </div>
+                    <div class="card-header-date" id="dynamic-header-date">...</div>
+                    <div class="card-text" id="history-text-content">Ładowanie...</div>
                 </div>
             </div>
         </div>
@@ -278,9 +220,7 @@
     </div>
 
     <script>
-        // --- KONFIGURACJA I DANE ---
-        // Używam placeholderów i linków do Wikipedii/Unsplash dla demonstracji.
-        // W produkcji podmieniłbyś to na swoje lokalne pliki.
+        // --- BAZA DANYCH ---
         const FIXED_DATABASE = {
             "11-25": [
                 { 
@@ -310,7 +250,7 @@
                 { 
                     year: "1989", 
                     text: "Wyemitowano pierwszy odcinek Simpsonów. To najdłużej nadawany serial animowany w historii.",
-                    img: "https://images.unsplash.com/photo-1535378437327-1e1b8b871c53?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" // Symboliczny TV
+                    img: "https://images.unsplash.com/photo-1535378437327-1e1b8b871c53?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
                 }
             ],
             "12-19": [
@@ -322,19 +262,17 @@
             ]
         };
 
-        // Dodatkowe, losowe ciekawostki "zapasowe" na dni bez daty w bazie
         const RANDOM_FACTS = [
             { year: "CIEKAWOSTKA", text: "Najkrótsza wojna w historii trwała 38 minut (Wielka Brytania vs Zanzibar, 1896).", img: "https://images.unsplash.com/photo-1529480790163-f27303c20c02?auto=format&fit=crop&w=600&q=80" },
             { year: "KOSMOS", text: "Jowisz jest tak duży, że zmieściłby w sobie wszystkie inne planety Układu Słonecznego.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/640px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg" },
             { year: "NATURA", text: "Ośmiornice mają trzy serca i niebieską krew. Są jednymi z najinteligentniejszych zwierząt.", img: "https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=600&q=80" }
         ];
 
-        const VIEW_DURATION = 8000; // Czas wyświetlania jednego widoku (ms)
+        const VIEW_DURATION = 8000;
         let currentView = 'A';
         let todaysEvents = []; 
         let currentEventIndex = 0;
         
-        // --- LOGIKA ZEGARA ---
         function updateDateTime() {
             try {
                 const now = new Date();
@@ -347,15 +285,8 @@
             } catch(e) { console.error(e); }
         }
 
-        // --- LOGIKA NUMERU ---
-        const PRE_DEFINED_BAGS = [
-            [3, 5, 17, 1, 9, 14, 6, 8, 12, 4, 10, 15, 2, 13, 7, 11, 18, 16],
-            // ... (skrócone dla czytelności kodu, logika ta sama)
-        ];
-        // Używam prostej logiki losowania na potrzeby demo, żeby nie komplikować kodu
         function updateLuckyNumber() {
             const now = new Date();
-            // Prosty hash daty dla deterministycznego wyniku w ciągu dnia
             const seed = now.getDate() + now.getMonth(); 
             const luckyNum = (seed % 18) + 1; 
             
@@ -364,7 +295,6 @@
             
             if(numText) numText.textContent = luckyNum;
             
-            // Generowanie kości
             if(diceCol) {
                 diceCol.innerHTML = '';
                 let diceValues = [];
@@ -386,18 +316,15 @@
             }
         }
 
-        // --- LOGIKA HISTORII ---
         function initHistoryData() {
             const now = new Date();
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
             const day = now.getDate().toString().padStart(2, '0');
             const dateKey = `${month}-${day}`;
             
-            // Pobierz wydarzenia na dziś lub wylosuj z zapasowych
             if (FIXED_DATABASE[dateKey]) {
                 todaysEvents = FIXED_DATABASE[dateKey];
             } else {
-                // Jeśli nie ma daty w bazie, użyj losowych faktów
                 todaysEvents = RANDOM_FACTS;
             }
             currentEventIndex = 0; 
@@ -415,26 +342,17 @@
 
             if (todaysEvents.length > 0) {
                 const event = todaysEvents[currentEventIndex];
-                
-                // 1. Nagłówek i Rok
                 const yearStr = event.year;
                 headerDate.textContent = `${dateString} | ${yearStr}`;
-                
-                // Wstaw rok do tła tylko jeśli jest liczbą
                 bgYear.textContent = /^\d+$/.test(yearStr) ? yearStr : "";
-
-                // 2. Treść
                 contentText.textContent = event.text;
 
-                // 3. Obrazek
                 if (event.img) {
                     imgEl.src = event.img;
                 } else {
-                    // Fallback
-                    imgEl.src = `https://picsum.photos/seed/${currentEventIndex + 123}/400/500`;
+                    imgEl.src = `https://placehold.co/600x400/png?text=Historia+${yearStr}`;
                 }
 
-                // Przygotuj index na następne wejście
                 currentEventIndex = (currentEventIndex + 1) % todaysEvents.length;
             }
         }
@@ -444,7 +362,7 @@
             const vb = document.getElementById('view-b');
             
             if(currentView === 'A') {
-                renderNextFact(); // Załaduj dane zanim pokażesz widok
+                renderNextFact();
                 va.classList.remove('active'); va.classList.add('inactive');
                 vb.classList.remove('inactive'); vb.classList.add('active');
                 currentView = 'B';
@@ -455,7 +373,6 @@
             }
         }
 
-        // --- START ---
         updateDateTime();
         updateLuckyNumber();
         initHistoryData();
