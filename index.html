@@ -3,466 +3,466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plan Dyżurów - 640x500</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Panel Antygravity - Redesign V4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+    
     <style>
-        /* Sztywne wymiary ekranu */
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #111827; /* Ciemne tło poza "ekranem" */
-            margin: 0;
+        /* --- GŁÓWNE ZMIENNE --- */
+        :root {
+            --theme-title-color: #a8dadc;
+            --theme-number-color: #f1faee;
+            --theme-bg-gradient-start: #000020;
+            --theme-bg-gradient-end: #4a0d66;
+            --theme-border-color: black;
+            --theme-star-color: white;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        body {
+            margin: 0; overflow: hidden; background-color: #e0e0e0;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Roboto', sans-serif; color: #333; height: 100vh;
+            /* Tło całego ekranu (poza panelem) */
+            background-image: radial-gradient(#444 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        #main-wrapper {
+            width: 700px; height: 320px; /* Nieco powiększony dla lepszego efektu */
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            background-color: #fff;
+            border-radius: 20px; overflow: hidden;
+        }
+        
+        /* --- UKŁAD WIDOKÓW --- */
+        .view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: row;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.6s ease-in-out; /* Bardziej sprężysta animacja */
+            background-color: #fff;
+            opacity: 1; 
+            z-index: 0;
+        }
+        
+        .view.active { opacity: 1; z-index: 10; transform: translateY(0); }
+        .view.inactive { opacity: 0; z-index: 0; transform: translateY(100%); }
+        
+        /* =========================================
+           WIDOK A: ZEGAR I GRA (Klasyczny styl)
+           ========================================= */
+        #view-a { background-color: #f9f9f9; }
+        .panel { flex: 1; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; align-items: center; }
+        
+        #left-panel { background-color: #fdfdfd; border-right: 1px solid #eee; }
+        #right-panel { background-color: #fff; }
+        
+        /* Zegar */
+        #clock-container { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; text-align: center; }
+        #dayofweek { font-family: 'Oswald', sans-serif; font-size: 1.2em; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+        #current-date { font-size: 1.2em; color: #444; margin-bottom: 10px; font-weight: 700; }
+        #current-time { font-family: 'Oswald', sans-serif; font-size: 3.5em; font-weight: 400; color: #222; letter-spacing: 1px; }
+
+        /* Szczęśliwy Numer */
+        #lucky-number-container {
+            width: 100%; height: 100%; position: relative; display: flex; flex-direction: column;
+            align-items: center; border: 6px solid var(--theme-border-color);
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.2); overflow: hidden; padding: 5px; box-sizing: border-box;
+            background: linear-gradient(135deg, var(--theme-bg-gradient-start) 0%, var(--theme-bg-gradient-end) 100%);
+            color: var(--theme-number-color); border-radius: 12px;
+        }
+        #lucky-number-container .title {
+            font-family: 'Bangers', cursive; font-size: 1.8em; line-height: 1.1; margin: 10px 0;
+            -webkit-text-stroke: 1px black; color: var(--theme-title-color); z-index: 10;
+        }
+        #lucky-content-wrapper { display: flex; flex-direction: row; justify-content: space-around; align-items: center; width: 100%; flex-grow: 1; }
+        #lucky-dice-column { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        #lucky-dice-column.three-dice-layout { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 5px; }
+        #lucky-dice-column.three-dice-layout .dice:nth-child(3) { grid-row: 1 / 3; grid-column: 2 / 3; align-self: center; justify-self: center; }
+
+        #lucky-number-text {
+            font-family: 'Bangers', cursive; font-size: 6em; line-height: 1; margin: 0;
+            -webkit-text-stroke: 2px black; text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+            color: var(--theme-number-color); z-index: 10;
+        }
+        
+        .dice { width: 40px; height: 40px; background: white; border: 2px solid black; border-radius: 6px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 4px; box-sizing: border-box; }
+        .dot { width: 8px; height: 8px; background: black; border-radius: 50%; align-self: center; justify-self: center; }
+        /* Style kropek kostki (skrócone dla przejrzystości, działają tak samo) */
+        .dice.value-1 .dot:nth-child(1) { grid-area: 2 / 2; }
+        .dice.value-2 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-2 .dot:nth-child(2) { grid-area: 3 / 3; }
+        .dice.value-3 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-3 .dot:nth-child(2) { grid-area: 2 / 2; } .dice.value-3 .dot:nth-child(3) { grid-area: 3 / 3; }
+        .dice.value-4 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-4 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-4 .dot:nth-child(3) { grid-area: 3 / 1; } .dice.value-4 .dot:nth-child(4) { grid-area: 3 / 3; }
+        .dice.value-5 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-5 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-5 .dot:nth-child(3) { grid-area: 2 / 2; } .dice.value-5 .dot:nth-child(4) { grid-area: 3 / 1; } .dice.value-5 .dot:nth-child(5) { grid-area: 3 / 3; }
+        .dice.value-6 .dot:nth-child(1) { grid-area: 1 / 1; } .dice.value-6 .dot:nth-child(2) { grid-area: 1 / 3; } .dice.value-6 .dot:nth-child(3) { grid-area: 2 / 1; } .dice.value-6 .dot:nth-child(4) { grid-area: 2 / 3; } .dice.value-6 .dot:nth-child(5) { grid-area: 3 / 1; } .dice.value-6 .dot:nth-child(6) { grid-area: 3 / 3; }
+
+        /* =========================================
+           WIDOK B: CIEKAWOSTKI (NOWY DESIGN)
+           ========================================= */
+        #view-b { 
+            /* Animowany gradient w tle */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Zmiana z height na min-height */
-            padding: 20px; /* Dodatkowy odstęp od krawędzi przeglądarki */
-            overflow: auto; /* Pozwalamy na scrollowanie strony jeśli okno jest małe */
         }
 
-        /* Symulacja ekranu urządzenia */
-        #device-screen {
-            width: 640px;
-            height: 500px;
-            background-color: #f3f4f6;
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Szklana karta */
+        .history-card {
+            display: flex;
+            width: 92%;
+            height: 88%;
+            background: rgba(255, 255, 255, 0.75); /* Półprzezroczyste białe */
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            overflow: hidden;
             position: relative;
+        }
+
+        /* Lewa strona - Obrazek */
+        .card-image-wrapper {
+            flex: 0 0 45%; /* 45% szerokości */
+            position: relative;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 12s ease; /* Bardzo powolny zoom */
+            opacity: 0.9;
+        }
+
+        /* Efekt Ken Burns (zoom) gdy widok jest aktywny */
+        .view.active .card-image {
+            transform: scale(1.15);
+        }
+
+        /* Ciemny gradient na dole obrazka (dla stylu) */
+        .card-image-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            pointer-events: none;
+        }
+
+        /* Prawa strona - Treść */
+        .card-content {
+            flex: 1;
+            padding: 30px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            flex-shrink: 0; /* Zapobiega zgniataniu przy małym oknie */
+            justify-content: center;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Obszar roboczy (wysokość 500 - 30 margin = 470px) */
-        #content-area {
-            width: 100%;
-            height: 470px; 
-            overflow: hidden; 
-            padding: 6px; /* Zwiększony padding wewnętrzny */
-            display: flex;
-            flex-direction: column;
+        /* Znak wodny (Rok w tle) */
+        .watermark-year {
+            position: absolute;
+            bottom: -30px;
+            right: -10px;
+            font-family: 'Bangers', cursive;
+            font-size: 10em;
+            color: rgba(0,0,0,0.06); /* Bardzo delikatny */
+            pointer-events: none;
+            user-select: none;
+            z-index: -1;
+            line-height: 1;
         }
 
-        /* Margines bezpieczeństwa na dole */
-        #safe-margin {
-            height: 30px;
-            width: 100%;
-            background-color: transparent; 
+        .card-header-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.0em;
+            font-weight: 500;
+            color: #d63384; /* Różowy akcent */
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
         }
 
-        /* Kolory nagłówków */
-        .header-green { background-color: #10b981; color: white; }
-        .header-purple { background-color: #8b5cf6; color: white; }
-        .header-orange { background-color: #f97316; color: white; }
-        .header-yellow { background-color: #fbbf24; color: #111827; }
-        .header-red { background-color: #ef4444; color: white; }
-        .header-blue { background-color: #3b82f6; color: white; }
-        .header-gray { background-color: #6b7280; color: white; }
-        
-        /* Animacja pulsowania dla aktywnej przerwy */
-        @keyframes pulse-soft {
-            0%, 100% { background-color: #dbeafe; border-left-color: #2563eb; }
-            50% { background-color: #bfdbfe; border-left-color: #60a5fa; }
+        .card-header-date {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.2em;
+            color: #222;
+            font-weight: 500;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            border-bottom: 3px solid #d63384;
+            display: inline-block;
+            padding-bottom: 5px;
         }
 
-        .highlight-row { 
-            animation: pulse-soft 3s infinite ease-in-out;
-            font-weight: 700;
-            border-left: 3px solid #2563eb; 
-        }
-        .highlight-row td { color: #1e3a8a; }
-
-        /* Styl czerwonej linii podczas lekcji */
-        .lesson-separator td {
-            border-bottom: 3px solid #ef4444 !important; 
+        .card-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.4em;
+            line-height: 1.5;
+            color: #333;
+            font-weight: 300;
         }
 
-        td.empty-cell { text-align: center; color: #cbd5e1; }
-        
-        /* Stylizacja tabeli - ULTRA KOMPAKTOWA */
-        .compact-table {
-            table-layout: fixed; /* Ważne dla utrzymania szerokości */
-        }
-        .compact-table th, .compact-table td {
-            padding: 1px 2px; /* Minimalny padding */
-            font-size: 9px; 
-            line-height: 1.2; /* Lekko większa interlinia dla czytelności */
-            text-align: center;
-            white-space: normal;
-            word-break: break-word;
-            border-bottom: 1px solid #e5e7eb;
-            border-right: 1px solid #f3f4f6; 
-            overflow: hidden;
-        }
-        
-        .compact-table tbody tr:nth-child(even) { background-color: #fafafa; }
-
-        .compact-table thead th { 
-            font-size: 8px; 
-            text-align: center; 
-            border-bottom: 1px solid white; 
-            padding-top: 4px; /* Więcej miejsca w nagłówku */
-            padding-bottom: 4px;
-            vertical-align: middle;
-        }
-
-        /* Szerokości kolumn dopasowane do 640px */
-        .nr-column { width: 18px; }
-        .hour-column { width: 35px; font-size: 8px !important; }
-        .obiad-column { width: 45px; }
-        
-        #current-day-title { font-size: 14px; }
-
-        /* Płynne przejście paska */
-        #progress-bar {
-            transition: width 1s linear, background-color 0.5s ease;
+        /* Mobile */
+        @media (max-width: 600px) {
+            #main-wrapper { width: 95%; height: 550px; }
+            .history-card { flex-direction: column; }
+            .card-image-wrapper { flex: 0 0 200px; }
+            .watermark-year { font-size: 6em; bottom: 10px; right: 10px; }
+            .card-header-date { font-size: 1.8em; }
+            .card-content { padding: 20px; justify-content: flex-start; }
+            .card-text { font-size: 1.2em; }
         }
     </style>
 </head>
 <body>
-
-    <!-- Główny kontener symulujący ekran 640x500 -->
-    <div id="device-screen">
+    <div id="main-wrapper">
         
-        <!-- Obszar treści (470px) -->
-        <div id="content-area">
-            
-            <!-- NAGŁÓWEK: Tytuł dnia + Licznik czasu -->
-            <div class="flex items-center justify-between gap-2 mb-1 bg-white p-1 px-3 rounded-lg shadow-sm border border-blue-100 min-h-[2.5rem] shrink-0">
-                
-                <!-- Lewa strona: Nazwa dnia -->
-                <div id="current-day-title" class="font-bold text-blue-800 uppercase tracking-wide whitespace-nowrap">
-                    Ładowanie...
+        <!-- WIDOK A: ZEGAR + NUMER -->
+        <div id="view-a" class="view active">
+            <div id="left-panel" class="panel">
+                <div id="clock-container">
+                    <div id="dayofweek">...</div>
+                    <div id="current-date">...</div>
+                    <div id="current-time">00:00</div>
                 </div>
-
-                <!-- Prawa strona: Stoper -->
-                <div id="timer-container" class="flex items-center gap-2 flex-grow justify-end hidden">
-                    <div class="flex flex-col items-end leading-none">
-                        <span id="timer-label" class="text-[8px] font-bold text-blue-600 uppercase tracking-wider">Do końca:</span>
-                        <span id="timer-countdown" class="text-sm font-mono font-bold text-gray-700">00:00</span>
-                    </div>
-                    
-                    <!-- Pasek Postępu - mniejszy -->
-                    <div class="w-24 bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div id="progress-bar" class="bg-blue-500 h-full rounded-full" style="width: 0%"></div>
+            </div>
+            <div id="right-panel" class="panel">
+                <div id="lucky-number-container">
+                    <h2 class="title">Lucky Number</h2>
+                    <div id="lucky-content-wrapper">
+                        <div id="lucky-dice-column"></div>
+                        <div id="lucky-number-text">?</div>
                     </div>
                 </div>
             </div>
-
-            <main class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex-grow relative">
-                <div class="h-full w-full overflow-auto"> <!-- overflow-auto wewnątrz main w razie czego -->
-                    <table class="w-full text-gray-700 compact-table border-collapse">
-                        <thead class="text-white uppercase tracking-wider sticky top-0 z-10">
-                            <tr>
-                                <th scope="col" class="bg-gray-700 nr-column">Nr</th>
-                                <th scope="col" class="bg-gray-700 hour-column">Czas</th>
-                                <th scope="col" class="header-green">Zielony</th>
-                                <th scope="col" class="header-purple">Fiolet</th>
-                                <th scope="col" class="header-orange">Poma.</th>
-                                <th scope="col" class="bg-gray-500">Undrg.</th>
-                                <th scope="col" class="header-yellow">Żółty</th>
-                                <th scope="col" class="header-red">Czerw.</th>
-                                <th scope="col" class="header-blue">Nieb.</th>
-                                <th scope="col" class="bg-gray-500">Parter</th>
-                                <th scope="col" class="bg-gray-500">SG</th>
-                                <th scope="col" class="header-gray obiad-column">Obiad</th>
-                            </tr>
-                        </thead>
-                        
-                        <!-- Kontenery na dni tygodnia -->
-                        <tbody id="tbody-poniedzialek" class="schedule-body hidden"></tbody>
-                        <tbody id="tbody-wtorek" class="schedule-body hidden"></tbody>
-                        <tbody id="tbody-sroda" class="schedule-body hidden"></tbody>
-                        <tbody id="tbody-czwartek" class="schedule-body hidden"></tbody>
-                        <tbody id="tbody-piatek" class="schedule-body hidden"></tbody>
-                    </table>
-                </div>
-            </main>
         </div>
 
-        <!-- Pusty margines na dole (30px) -->
-        <div id="safe-margin"></div>
+        <!-- WIDOK B: CIEKAWOSTKI (NOWY) -->
+        <div id="view-b" class="view inactive">
+            <div class="history-card">
+                <!-- Lewa strona: Obrazek -->
+                <div class="card-image-wrapper">
+                    <img id="history-img" class="card-image" src="" alt="Ciekawostka">
+                    <div class="card-image-overlay"></div>
+                </div>
+
+                <!-- Prawa strona: Treść -->
+                <div class="card-content">
+                    <div class="watermark-year" id="history-bg-year">2023</div>
+                    
+                    <div class="card-header-label">Czy wiesz, że...</div>
+                    <div class="card-header-date" id="dynamic-header-date">17 GRUDNIA 1903</div>
+                    
+                    <div class="card-text" id="history-text-content">
+                        Ładowanie danych historycznych...
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-<script>
-    // ============================================================
-    // DANE DYŻURÓW
-    // ============================================================
-    const bazaDyzurow = {
-        poniedzialek: [
-            ["0", "8:00<br>8:10", "E. Szostak", "M. Szydłowska", "A. Pierzchała-Badura", "-", "J. Szymkowicz", "I. Wilczyńska", "A. Mizerska", "-", "K. Czajęcka", "-"],
-            ["1", "8:55<br>9:05", "K. Matysek-Sobolewska", "M. Szydłowska", "K. Miąsik<br>P. Latosińska", "M. Niedbał", "M. Gil", "M. Ankiewicz", "A. Mizerska", "-", "K. Czajęcka", "-"],
-            ["2", "9:50<br>10:00", "M. Ankiewicz", "R. Rogalski", "E. Łubińska<br>M. Piekarski", "A. Stankiewicz", "J. Szymkowicz", "J. Wojtan", "M. Rzepka", "-", "D. Piątek", "-"],
-            ["3", "10:45<br>10:55", "E. Szostak", "R. Ciszewska", "D. Gałka<br>M. Szydłowska", "O. Ginalska", "T. Majewski", "M. Gil", "A. Mizerska", "-", "T. Zygmunt", "-"],
-            ["4", "11:40<br>11:50", "W. Wrzaszcz", "J. Miecznik-Warda", "K. Miąsik<br>ks. A. Hepek", "O. Ginalska", "E. Krzyżyk", "K. Bugajska", "R. Rogalski", "I. Wilczyńska", "T. Zygmunt", "-"],
-            ["5", "12:35<br>12:45", "-", "-", "A. Pierzchała-Badura<br>A. Lorenc", "A. Stankiewicz", "T. Majewski", "J. Wojtan", "K. Jakubowska", "K. Bugajska", "D. Piątek", "-"]
-        ],
-        wtorek: [
-            ["0", "8:00<br>8:10", "W. Wrzaszcz", "J. Miecznik-Warda", "K. Miąśik", "-", "O. Ginalska", "K. Jochymek", "A. Lorenc", "-", "T. Zygmunt", "-"],
-            ["1", "8:55<br>9:05", "E. Szostak", "M. Szydłowska", "A. Szydłowska<br>I. Wilczyńska", "A. Misiołek", "M. Gil", "J. Wojtan", "K. Jakubowska", "-", "K. Matysek–Sobolewska", "-"],
-            ["2", "9:50<br>10:00", "W. Wrzaszcz", "K. Miąśik", "E. Łubińska<br>A. Lorenc", "M. Szeligiewicz", "T. Majewski", "K. Bugajska", "A. Mizerska", "-", "T. Zygmunt", "-"],
-            ["3", "10:45<br>10:55", "E. Szostak", "J. Miecznik-Warda", "A. Szydłowska<br>E. Łubińska", "A. Misiołek", "A. Stankiewicz", "K. Jochymek", "K. Jakubowska", "-", "K. Matysek–Sobolewska", "-"],
-            ["4", "11:40<br>11:50", "K. Matysek-Sobolewska", "R. Ciszewska", "M. Niedbał<br>D. Kolany", "O. Ginalska", "E. Krzyżyk", "J. Wojtan", "M. Rzepka", "P. Latosińska", "D. Piątek", "-"],
-            ["5", "12:35<br>12:45", "-", "-", "A. Pierzchała-Badura<br>R. Rogalski", "M. Szeligiewicz", "J. Szymkowicz", "K. Bugajska", "K. Jakubowska", "M. Ankiewicz", "D. Piątek", "-"]
-        ],
-        sroda: [
-            ["0", "8:00<br>8:10", "K. Matysek-Sobolewska", "R. Ciszewska", "A. Szydłowska", "-", "J. Dominikowska", "J. Wojtan", "K. Jakubowska", "-", "K. Czajęcka", "-"],
-            ["1", "8:55<br>9:05", "E. Szostak", "J. Miecznik-Warda", "E. Łubińska<br>A. Pierzchała-Badura", "A. Misiołek", "O. Ginalska", "I. Wilczyńska", "M. Rzepka", "-", "K. Czajęcka", "-"],
-            ["2", "9:50<br>10:00", "K. Matysek-Sobolewska", "R. Ciszewska", "M. Niedbał<br>M. Gil", "J. Dominikowska", "T. Majewski", "K. Bugajska", "K. Jakubowska", "-", "T. Zygmunt", "-"],
-            ["3", "10:45<br>10:55", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Ankiewicz", "M. Szeligiewicz", "A. Stankiewicz", "J. Wojtan", "A. Mizerska", "-", "D. Piątek", "-"],
-            ["4", "11:40<br>11:50", "J. Hartel", "M. Szydłowska", "K. Miąsik<br>M. Piekarski", "A. Misiołek", "J. Szymkowicz", "M. Gil", "M. Rzepka", "A. Lorenc", "K. Matysek-Sobolewska", "-"],
-            ["5", "12:35<br>12:45", "-", "-", "A. Pierzchała-Badura<br>E. Łubińska", "M. Szeligiewicz", "D. Gałka", "K. Bugajska", "A. Mizerska", "A. Stankiewicz", "T. Zygmunt", "-"]
-        ],
-        czwartek: [
-            ["0", "8:00<br>8:10", "K. Matysek-Sobolewska", "M. Niedbał", "A. Stankiewicz", "-", "T. Majewski", "I. Wilczyńska", "M. Rzepka", "-", "T. Zygmunt", "-"],
-            ["1", "8:55<br>9:05", "K. Matysek-Sobolewska", "R. Ciszewska", "A. Pierzchała-Badura<br>D. Gałka", "O. Ginalska", "P. Latosińska", "J. Szymkowicz", "A. Solińska", "-", "D. Piątek", "-"],
-            ["2", "9:50<br>10:00", "E. Szostak", "M. Szydłowska", "A. Szydłowska<br>M. Gil", "A. Stankiewicz", "K. Jakubowska", "K. Jochymek", "A. Mizerska", "-", "T. Zygmunt", "-"],
-            ["3", "10:45<br>10:55", "W. Wrzaszcz", "R. Ciszewska", "I. Wilczyńska<br>D. Kolany", "M. Ankiewicz", "J. Szymkowicz", "K. Bugajska", "M. Rzepka", "-", "K. Czajęcka", "-"],
-            ["4", "11:40<br>11:50", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Niedbał", "O. Ginalska", "J. Wojtan", "K. Jochymek", "K. Jakubowska", "J. Hartel", "-", "-"],
-            ["5", "12:35<br>12:50", "R. Rogalski", "J. Miecznik-Warda", "A. Pierzchała-Badura<br>M. Gil", "M. Ankiewicz", "T. Majewski", "J. Wojtan", "A. Mizerska", "K. Bugajska", "-", "E. Łubińska"],
-            ["6", "13:35<br>13:50", "-", "-", "D. Gałka", "", "E. Krzyżyk", "-", "-", "M. Rzepka", "-", "A. Stankiewicz"]
-        ],
-        piatek: [
-            ["0", "8:00<br>8:10", "M. Ankiewicz", "R. Rogalski", "E. Łubińska", "-", "M. Gil", "K. Bugajska", "A. Mizerska", "-", "D. Piątek", "-"],
-            ["1", "8:55<br>9:05", "E. Szostak", "M. Szydłowska", "A. Pierzchała-Badura<br>P. Latosińska", "M. Ankiewicz", "T. Majewski", "J. Wojtan", "K. Jakubowska", "-", "T. Zygmunt", "-"],
-            ["2", "9:50<br>10:00", "ks. A. Hepek", "M. Niedbał", "A. Szydłowska<br>D. Gałka", "A. Stankiewicz", "K. Jochymek", "J. Szymkowicz", "M. Rzepka", "-", "K. Czajęcka", "-"],
-            ["3", "10:45<br>10:55", "E. Szostak", "J. Miecznik-Warda", "K. Miąsik<br>M. Piekarski", "A. Solińska", "T. Majewski", "K. Jakubowska", "A. Mizerska", "-", "K. Matysek-Sobolewska", "-"],
-            ["4", "11:40<br>11:50", "M. Niedbał", "J. Hartel", "A. Pierzchała-Badura<br>M. Gil", "O. Ginalska", "E. Krzyżyk", "K. Bugajska", "M. Rzepka", "P. Latosińska", "T. Zygmunt", "-"],
-            ["5", "12:35<br>12:50", "W. Wrzaszcz", "R. Rogalski", "D. Gałka<br>M. Piekarski", "A. Stankiewicz", "K. Jochymek", "J. Wojtan", "", "J. Hartel", "D. Piątek", "R. Ciszewska"],
-            ["6", "13:35<br>13:50", "M. Niedbał", "K. Miąsik", "E. Łubińska", "O. Ginalska", "M. Gil", "M. Rzepka", "-", "P. Latosińska", "D. Piątek", "A. Szydłowska"],
-            ["7", "14:35<br>14:40", "-", "-", "-", "-", "-", "-", "-", "-", "T. Zygmunt", "-"]
-        ]
-    };
-
-    // Funkcja budująca HTML tabeli
-    function generujTabele() {
-        for (const [dzien, wiersze] of Object.entries(bazaDyzurow)) {
-            const tbody = document.getElementById(`tbody-${dzien}`);
-            if (!tbody) continue;
-            
-            tbody.innerHTML = ''; // Czyszczenie
-            
-            wiersze.forEach(daneWiersza => {
-                const tr = document.createElement('tr');
-                
-                daneWiersza.forEach((tresc, index) => {
-                    const td = document.createElement('td');
-                    
-                    // Formatowanie Nr i Godziny
-                    if (index === 0) td.className = "font-bold text-gray-500"; 
-                    if (index === 1) td.className = "font-medium"; // Usunięto text-xs, styl w CSS
-                    
-                    // Puste komórki
-                    if (tresc === "-" || tresc.trim() === "") {
-                        td.className += " empty-cell";
-                    }
-                    
-                    td.innerHTML = tresc;
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-        }
-    }
-
-    // Funkcja aktualizująca pasek postępu i licznik
-    function updateTimer(startTimeInMinutes, endTimeInMinutes, isLesson) {
-        const timerContainer = document.getElementById('timer-container');
-        const progressBar = document.getElementById('progress-bar');
-        const countdownText = document.getElementById('timer-countdown');
-        const timerLabel = document.getElementById('timer-label');
-
-        // Pokaż pasek
-        timerContainer.classList.remove('hidden');
-
-        // Ustawienia tekstów i kolorów zależnie czy to lekcja czy przerwa
-        if (isLesson) {
-            timerLabel.innerText = "LEKCJA:";
-            timerLabel.classList.remove('text-blue-600');
-            timerLabel.classList.add('text-red-600');
-            progressBar.classList.remove('bg-blue-500');
-            progressBar.classList.add('bg-red-500');
-        } else {
-            timerLabel.innerText = "PRZERWA:";
-            timerLabel.classList.remove('text-red-600');
-            timerLabel.classList.add('text-blue-600');
-            progressBar.classList.remove('bg-red-500');
-            progressBar.classList.add('bg-blue-500');
-        }
-
-        // Obliczenia matematyczne czasu (PRAWIDŁOWY ZEGAR SYSTEMOWY)
-        const now = new Date();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const currentSeconds = now.getSeconds();
-        
-        // Zamiana minut na sekundy dla płynności
-        const startTotalSeconds = startTimeInMinutes * 60;
-        const endTotalSeconds = endTimeInMinutes * 60;
-        const currentTotalSeconds = currentMinutes * 60 + currentSeconds;
-        
-        const totalDurationSeconds = endTotalSeconds - startTotalSeconds;
-        const elapsedSeconds = currentTotalSeconds - startTotalSeconds;
-        const remainingSeconds = endTotalSeconds - currentTotalSeconds;
-
-        if (remainingSeconds <= 0) {
-            progressBar.style.width = '100%';
-            countdownText.innerText = "00:00";
-            return;
-        }
-
-        // Oblicz procent szerokości
-        const percentage = Math.min(100, Math.max(0, (elapsedSeconds / totalDurationSeconds) * 100));
-        progressBar.style.width = `${percentage}%`;
-        
-        // Formatowanie MM:SS
-        const m = Math.floor(remainingSeconds / 60);
-        const s = remainingSeconds % 60;
-        countdownText.innerText = `${m}:${s < 10 ? '0' + s : s}`;
-    }
-
-    // Główna logika inicjalizacji
-    document.addEventListener('DOMContentLoaded', function() {
-        generujTabele(); 
-
-        const schedules = document.querySelectorAll('.schedule-body');
-        const currentDayTitle = document.getElementById('current-day-title');
-        const dayIdMap = ['niedziela', 'poniedzialek', 'wtorek', 'sroda', 'czwartek', 'piatek', 'sobota'];
-        const dayNameMap = {
-            'niedziela': 'Niedziela', 'poniedzialek': 'Poniedziałek', 'wtorek': 'Wtorek',
-            'sroda': 'Środa', 'czwartek': 'Czwartek', 'piatek': 'Piątek', 'sobota': 'Sobota'
+    <script>
+        // --- KONFIGURACJA I DANE ---
+        // Używam placeholderów i linków do Wikipedii/Unsplash dla demonstracji.
+        // W produkcji podmieniłbyś to na swoje lokalne pliki.
+        const FIXED_DATABASE = {
+            "11-25": [
+                { 
+                    year: "1902", 
+                    text: "Dziś Dzień Pluszowego Misia! Pierwszy pluszak Teddy powstał w USA dokładnie w 1902 roku.",
+                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TeddyBear.jpg/640px-TeddyBear.jpg"
+                },
+                { 
+                    year: "1915", 
+                    text: "Albert Einstein przedstawił Ogólną Teorię Względności. To ona wyjaśnia, jak działa grawitacja!",
+                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Einstein_1921_by_F_Schmutzer_-_restoration.jpg/640px-Einstein_1921_by_F_Schmutzer_-_restoration.jpg"
+                }
+            ],
+            "12-04": [
+                {
+                    year: "BARBÓRKA",
+                    text: "Dziś Barbórka! Tradycyjne święto górników, geologów i innych osób wydobywających skarby Ziemi.",
+                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Orkiestra_Gornicza_Sanok_2013.JPG/640px-Orkiestra_Gornicza_Sanok_2013.JPG"
+                }
+            ],
+            "12-17": [
+                { 
+                    year: "1903", 
+                    text: "Bracia Wright dokonali pierwszego lotu samolotem. Trwał 12 sekund, ale zmienił historię świata.",
+                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Wright_First_Flight_1903.jpg/800px-Wright_First_Flight_1903.jpg" 
+                },
+                { 
+                    year: "1989", 
+                    text: "Wyemitowano pierwszy odcinek Simpsonów. To najdłużej nadawany serial animowany w historii.",
+                    img: "https://images.unsplash.com/photo-1535378437327-1e1b8b871c53?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" // Symboliczny TV
+                }
+            ],
+            "12-19": [
+                {
+                    year: "1843",
+                    text: "Charles Dickens wydał 'Opowieść wigilijną'. To historia o magii Świąt, którą zna cały świat.",
+                    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Dickens_Gurney.jpg/640px-Dickens_Gurney.jpg"
+                }
+            ]
         };
 
-        // Funkcja sprawdzająca aktualny stan (PRAWIDŁOWY ZEGAR)
-        function updateState(dayId) {
-            // 1. Wyczyść style poprzednie
-            document.querySelectorAll('.schedule-body tr').forEach(row => {
-                row.classList.remove('highlight-row');
-                row.classList.remove('lesson-separator');
-            });
+        // Dodatkowe, losowe ciekawostki "zapasowe" na dni bez daty w bazie
+        const RANDOM_FACTS = [
+            { year: "CIEKAWOSTKA", text: "Najkrótsza wojna w historii trwała 38 minut (Wielka Brytania vs Zanzibar, 1896).", img: "https://images.unsplash.com/photo-1529480790163-f27303c20c02?auto=format&fit=crop&w=600&q=80" },
+            { year: "KOSMOS", text: "Jowisz jest tak duży, że zmieściłby w sobie wszystkie inne planety Układu Słonecznego.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/640px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg" },
+            { year: "NATURA", text: "Ośmiornice mają trzy serca i niebieską krew. Są jednymi z najinteligentniejszych zwierząt.", img: "https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=600&q=80" }
+        ];
 
-            const activeTbody = document.getElementById(`tbody-${dayId}`);
-            // Jeśli jest weekend lub błąd, ukryj timer i wyjdź
-            if (!activeTbody) {
-                document.getElementById('timer-container').classList.add('hidden');
-                return;
-            }
-
-            const rows = activeTbody.querySelectorAll('tr');
-            const now = new Date();
-            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            let activeFound = false;
-            let nextBreakRow = null;
-            let previousBreakEnd = null;
-            let previousRow = null;
-
-            // Iterujemy po wierszach (przerwach) z planu
-            for (const row of rows) {
-                const timeCell = row.cells[1]; 
-                if (!timeCell) continue;
-                
-                // Parsowanie godziny z komórki (np. "8:00 8:10")
-                const timeText = timeCell.innerHTML.replace('<br>', ' ');
-                const times = timeText.trim().split(/\s+/);
-                if (times.length < 2) continue;
-
-                const timeMatchStart = times[0].match(/(\d{1,2}):(\d{2})/);
-                const timeMatchEnd = times[1].match(/(\d{1,2}):(\d{2})/);
-
-                if (timeMatchStart && timeMatchEnd) {
-                    const startHour = parseInt(timeMatchStart[1], 10);
-                    const startMinute = parseInt(timeMatchStart[2], 10);
-                    const endHour = parseInt(timeMatchEnd[1], 10);
-                    const endMinute = parseInt(timeMatchEnd[2], 10);
-
-                    const startTimeInMinutes = startHour * 60 + startMinute;
-                    const endTimeInMinutes = endHour * 60 + endMinute;
-                    
-                    // --- SPRAWDZANIE WARUNKÓW ---
-
-                    // A. CZY TERAZ JEST PRZERWA? (Niebieski pasek)
-                    if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
-                        row.classList.add('highlight-row');
-                        updateTimer(startTimeInMinutes, endTimeInMinutes, false); // false = przerwa
-                        activeFound = true;
-                        row.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Auto-scroll
-                        return; // Znaleziono, kończymy pętlę
-                    }
-
-                    // B. CZY TERAZ JEST LEKCJA? (Czerwony pasek)
-                    // (Czas pomiędzy końcem poprzedniej przerwy a początkiem tej)
-                    if (previousBreakEnd !== null) {
-                        if (currentTimeInMinutes >= previousBreakEnd && currentTimeInMinutes < startTimeInMinutes) {
-                            // Tak, trwa lekcja
-                            if (previousRow) previousRow.classList.add('lesson-separator'); // Czerwona linia pod poprzednią przerwą
-                            
-                            updateTimer(previousBreakEnd, startTimeInMinutes, true); // true = lekcja
-                            activeFound = true;
-                            if(previousRow) previousRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            return; // Znaleziono, kończymy pętlę
-                        }
-                    }
-                    
-                    // Szukanie następnej przerwy (żeby zaznaczyć, jeśli nic nie jest aktywne)
-                    if (nextBreakRow === null && currentTimeInMinutes < startTimeInMinutes) {
-                        nextBreakRow = row;
-                    }
-
-                    previousBreakEnd = endTimeInMinutes;
-                    previousRow = row;
-                }
-            }
-
-            // Jeśli nie znaleziono aktywnej przerwy ani lekcji (np. jest po lekcjach)
-            if (!activeFound) {
-                document.getElementById('timer-container').classList.add('hidden');
-                // Opcjonalnie: zaznacz następną przerwę na szaro/zwykłym kolorem
-                if (nextBreakRow) nextBreakRow.classList.add('highlight-row'); 
-            }
-        }
-
-        // Funkcja przełączająca widok na konkretny dzień
-        function showScheduleForDay(dayId) {
-            schedules.forEach(tbody => tbody.classList.add('hidden'));
-            const activeTbody = document.getElementById(`tbody-${dayId}`);
-            
-            if (activeTbody) {
-                activeTbody.classList.remove('hidden');
-            }
-            
-            if (currentDayTitle && dayNameMap[dayId]) {
-                currentDayTitle.textContent = `DYŻURY: ${dayNameMap[dayId].toUpperCase()}`;
-            }
-            
-            // Od razu odśwież stan po zmianie dnia
-            updateState(dayId);
-        }
-
-        // --- START APLIKACJI ---
-        const todayIndex = new Date().getDay();
-        // Jeśli niedziela (0) lub sobota (6), pokaż poniedziałek, w przeciwnym razie właściwy dzień
-        const defaultDayId = (todayIndex === 0 || todayIndex === 6) ? 'poniedzialek' : dayIdMap[todayIndex];
+        const VIEW_DURATION = 8000; // Czas wyświetlania jednego widoku (ms)
+        let currentView = 'A';
+        let todaysEvents = []; 
+        let currentEventIndex = 0;
         
-        showScheduleForDay(defaultDayId);
+        // --- LOGIKA ZEGARA ---
+        function updateDateTime() {
+            try {
+                const now = new Date();
+                const timeEl = document.getElementById('current-time');
+                if(timeEl) {
+                    timeEl.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute:'2-digit'});
+                    document.getElementById('current-date').textContent = now.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
+                    document.getElementById('dayofweek').textContent = now.toLocaleDateString('pl-PL', { weekday: 'long' });
+                }
+            } catch(e) { console.error(e); }
+        }
 
-        // Pętla główna - odświeżanie co 1 sekundę
-        setInterval(() => {
+        // --- LOGIKA NUMERU ---
+        const PRE_DEFINED_BAGS = [
+            [3, 5, 17, 1, 9, 14, 6, 8, 12, 4, 10, 15, 2, 13, 7, 11, 18, 16],
+            // ... (skrócone dla czytelności kodu, logika ta sama)
+        ];
+        // Używam prostej logiki losowania na potrzeby demo, żeby nie komplikować kodu
+        function updateLuckyNumber() {
             const now = new Date();
-            const currentDayIndex = now.getDay();
-            const currentDayId = (currentDayIndex === 0 || currentDayIndex === 6) ? 'poniedzialek' : dayIdMap[currentDayIndex];
+            // Prosty hash daty dla deterministycznego wyniku w ciągu dnia
+            const seed = now.getDate() + now.getMonth(); 
+            const luckyNum = (seed % 18) + 1; 
             
-            // Sprawdź, czy zmienił się dzień (np. po północy)
-            const activeTbody = document.querySelector('.schedule-body:not(.hidden)');
-            const activeId = activeTbody ? activeTbody.id.replace('tbody-', '') : null;
+            const numText = document.getElementById('lucky-number-text');
+            const diceCol = document.getElementById('lucky-dice-column');
             
-            if (currentDayId !== activeId) {
-                showScheduleForDay(currentDayId);
-            } else {
-                updateState(currentDayId);
+            if(numText) numText.textContent = luckyNum;
+            
+            // Generowanie kości
+            if(diceCol) {
+                diceCol.innerHTML = '';
+                let diceValues = [];
+                if(luckyNum <= 6) diceValues = [luckyNum];
+                else if(luckyNum <= 12) diceValues = [6, luckyNum-6].sort((a,b)=>a-b);
+                else diceValues = [6, 6, luckyNum-12].sort((a,b)=>a-b);
+                
+                diceCol.className = '';
+                if(diceValues.length === 1) diceCol.classList.add('one-dice-layout');
+                else if(diceValues.length === 2) diceCol.classList.add('two-dice-layout');
+                else diceCol.classList.add('three-dice-layout');
+                
+                diceValues.forEach(val => {
+                    const d = document.createElement('div');
+                    d.className = `dice value-${val}`;
+                    for(let i=0; i<val; i++) d.appendChild(document.createElement('div')).className='dot';
+                    diceCol.appendChild(d);
+                });
             }
-        }, 1000);
-    });
-</script>
+        }
 
+        // --- LOGIKA HISTORII ---
+        function initHistoryData() {
+            const now = new Date();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const dateKey = `${month}-${day}`;
+            
+            // Pobierz wydarzenia na dziś lub wylosuj z zapasowych
+            if (FIXED_DATABASE[dateKey]) {
+                todaysEvents = FIXED_DATABASE[dateKey];
+            } else {
+                // Jeśli nie ma daty w bazie, użyj losowych faktów
+                todaysEvents = RANDOM_FACTS;
+            }
+            currentEventIndex = 0; 
+        }
+
+        function renderNextFact() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long' };
+            const dateString = now.toLocaleDateString('pl-PL', options).toUpperCase();
+            
+            const headerDate = document.getElementById('dynamic-header-date');
+            const contentText = document.getElementById('history-text-content');
+            const bgYear = document.getElementById('history-bg-year');
+            const imgEl = document.getElementById('history-img');
+
+            if (todaysEvents.length > 0) {
+                const event = todaysEvents[currentEventIndex];
+                
+                // 1. Nagłówek i Rok
+                const yearStr = event.year;
+                headerDate.textContent = `${dateString} | ${yearStr}`;
+                
+                // Wstaw rok do tła tylko jeśli jest liczbą
+                bgYear.textContent = /^\d+$/.test(yearStr) ? yearStr : "";
+
+                // 2. Treść
+                contentText.textContent = event.text;
+
+                // 3. Obrazek
+                if (event.img) {
+                    imgEl.src = event.img;
+                } else {
+                    // Fallback
+                    imgEl.src = `https://picsum.photos/seed/${currentEventIndex + 123}/400/500`;
+                }
+
+                // Przygotuj index na następne wejście
+                currentEventIndex = (currentEventIndex + 1) % todaysEvents.length;
+            }
+        }
+
+        function switchView() {
+            const va = document.getElementById('view-a');
+            const vb = document.getElementById('view-b');
+            
+            if(currentView === 'A') {
+                renderNextFact(); // Załaduj dane zanim pokażesz widok
+                va.classList.remove('active'); va.classList.add('inactive');
+                vb.classList.remove('inactive'); vb.classList.add('active');
+                currentView = 'B';
+            } else {
+                vb.classList.remove('active'); vb.classList.add('inactive');
+                va.classList.remove('inactive'); va.classList.add('active');
+                currentView = 'A';
+            }
+        }
+
+        // --- START ---
+        updateDateTime();
+        updateLuckyNumber();
+        initHistoryData();
+        
+        setInterval(updateDateTime, 1000);
+        setInterval(switchView, VIEW_DURATION);
+
+    </script>
 </body>
 </html>
