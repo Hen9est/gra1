@@ -3,571 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Antygravity - Redesign V5</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Roboto:wght@300;400;700&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+    <title>Liga Mistrzów - Wyniki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- GŁÓWNE ZMIENNE --- */
-        :root {
-            --theme-title-color: #fff;
-            --theme-text-color: #333;
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-            --accent-color: #d63384;
-            --dice-bg: #fff;
-            --dice-dot: #333;
-        }
         body {
-            margin: 0;
-            overflow: hidden;
+            font-family: 'Lato', sans-serif;
+            background-color: #000; /* Tło strony czarne, żeby wyróżnić "slajd" */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Roboto', sans-serif;
-            color: var(--theme-text-color);
             height: 100vh;
-            /* Globalny animowany gradient */
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
-        }
-        @keyframes gradientMove {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-        #main-wrapper {
-            width: 750px;
-            height: 350px;
-            position: relative;
-            /* Usunięto tło, teraz jest przezroczyste/szklane */
-            background: transparent;
-            border-radius: 20px;
-            /* overflow: hidden; - usunięte, żeby cienie ładnie wychodziły, ale content przycięty w widokach */
-        }
-        /* --- UKŁAD WIDOKÓW --- */
-        .view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            opacity: 0;
-            transform: scale(0.9) translateY(20px);
-            pointer-events: none;
-        }
-        .view.active {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            pointer-events: all;
-            z-index: 10;
-        }
-        /* Wspólny styl dla szklanych paneli */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            border-radius: 20px;
-        }
-        /* =========================================
-           WIDOK A: ZEGAR I GRA (Nowy Glassmorphism)
-           ========================================= */
-        #view-a {
-            gap: 20px;
-            /* Odstęp między panelami */
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        .panel-a {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-        }
-        #clock-panel {
-            flex: 1.2;
-            /* Trochę szerszy */
-            padding: 20px;
-        }
-        #game-panel {
-            flex: 1;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            /* Nieco jaśniejszy */
-        }
-        /* Zegar */
-        #dayofweek {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.4em;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-        }
-        #current-date {
-            font-size: 1.3em;
-            color: #444;
-            margin-bottom: 15px;
-            font-weight: 300;
-        }
-        #current-time {
-            font-family: 'Oswald', sans-serif;
-            font-size: 5em;
-            font-weight: 500;
-            color: #222;
-            line-height: 1;
-            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
-        }
-        /* Szczęśliwy Numer */
-        .game-title {
-            font-family: 'Bangers', cursive;
-            font-size: 2em;
-            color: #222;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
-        }
-        #lucky-content-wrapper {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-        }
-        #lucky-dice-column {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            animation: float 4s ease-in-out infinite;
-        }
-        #lucky-number-text {
-            font-family: 'Bangers', cursive;
-            font-size: 7em;
-            line-height: 1;
             margin: 0;
-            color: var(--accent-color);
-            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
-            transform: rotate(-5deg);
+            overflow: hidden; /* Ukrywamy paski przewijania przeglądarki */
         }
-        .dice {
-            width: 45px;
-            height: 45px;
-            background: var(--dice-bg);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            padding: 4px;
-            box-sizing: border-box;
-        }
-        .dot {
-            width: 9px;
-            height: 9px;
-            background: var(--dice-dot);
-            border-radius: 50%;
-            align-self: center;
-            justify-self: center;
-            box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
-        }
-        /* Style kropek kostki */
-        .dice.value-1 .dot:nth-child(1) {
-            grid-area: 2 / 2;
-        }
-        .dice.value-2 .dot:nth-child(1) {
-            grid-area: 1 / 1;
-        }
-        .dice.value-2 .dot:nth-child(2) {
-            grid-area: 3 / 3;
-        }
-        .dice.value-3 .dot:nth-child(1) {
-            grid-area: 1 / 1;
-        }
-        .dice.value-3 .dot:nth-child(2) {
-            grid-area: 2 / 2;
-        }
-        .dice.value-3 .dot:nth-child(3) {
-            grid-area: 3 / 3;
-        }
-        .dice.value-4 .dot:nth-child(1) {
-            grid-area: 1 / 1;
-        }
-        .dice.value-4 .dot:nth-child(2) {
-            grid-area: 1 / 3;
-        }
-        .dice.value-4 .dot:nth-child(3) {
-            grid-area: 3 / 1;
-        }
-        .dice.value-4 .dot:nth-child(4) {
-            grid-area: 3 / 3;
-        }
-        .dice.value-5 .dot:nth-child(1) {
-            grid-area: 1 / 1;
-        }
-        .dice.value-5 .dot:nth-child(2) {
-            grid-area: 1 / 3;
-        }
-        .dice.value-5 .dot:nth-child(3) {
-            grid-area: 2 / 2;
-        }
-        .dice.value-5 .dot:nth-child(4) {
-            grid-area: 3 / 1;
-        }
-        .dice.value-5 .dot:nth-child(5) {
-            grid-area: 3 / 3;
-        }
-        .dice.value-6 .dot:nth-child(1) {
-            grid-area: 1 / 1;
-        }
-        .dice.value-6 .dot:nth-child(2) {
-            grid-area: 1 / 3;
-        }
-        .dice.value-6 .dot:nth-child(3) {
-            grid-area: 2 / 1;
-        }
-        .dice.value-6 .dot:nth-child(4) {
-            grid-area: 2 / 3;
-        }
-        .dice.value-6 .dot:nth-child(5) {
-            grid-area: 3 / 1;
-        }
-        .dice.value-6 .dot:nth-child(6) {
-            grid-area: 3 / 3;
-        }
-        /* =========================================
-           WIDOK B: CIEKAWOSTKI
-           ========================================= */
-        #view-b {
-            padding: 0;
-        }
-        .history-card {
-            display: flex;
-            width: 100%;
-            height: 100%;
+        
+        /* Kontener o sztywnych wymiarach */
+        #slide-container {
+            width: 640px;
+            height: 496px;
+            background-color: #1a0505;
+            background-image: radial-gradient(circle at 50% 0%, #4a0404 0%, #1a0505 70%);
+            color: #f3f4f6;
+            padding-bottom: 82px; /* Dolne 82px wolne od treści */
+            box-sizing: border-box; /* Padding wliczony w wysokość */
             overflow: hidden;
-            /* Dziedziczy glass-panel */
-        }
-        .card-image-wrapper {
-            flex: 0 0 40%;
             position: relative;
-            overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-        .card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 12s ease;
-            opacity: 0.95;
-        }
-        .view.active .card-image {
-            transform: scale(1.15);
-        }
-        .card-content {
-            flex: 1;
-            padding: 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            position: relative;
         }
-        .watermark-year {
-            position: absolute;
-            bottom: -20px;
-            right: 10px;
-            font-family: 'Bangers', cursive;
-            font-size: 12em;
-            color: rgba(0, 0, 0, 0.04);
-            pointer-events: none;
-            user-select: none;
-            z-index: -1;
-            line-height: 1;
+
+        h1, h2, th {
+            font-family: 'Cinzel', serif;
         }
-        .card-header-label {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.1em;
-            font-weight: 500;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
+        .gold-text {
+            color: #ffd700;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
         }
-        .card-header-date {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2.5em;
-            color: #222;
-            font-weight: 500;
-            margin-bottom: 20px;
-            line-height: 1.1;
-            border-bottom: 4px solid var(--accent-color);
-            display: inline-block;
-            padding-bottom: 5px;
+        .glass-panel {
+            background: rgba(40, 10, 10, 0.8);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
-        .card-text {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1.5em;
-            line-height: 1.6;
-            color: #333;
-            font-weight: 300;
+        
+        /* Dostosowanie tabeli do małej wysokości */
+        td, th {
+            padding: 2px 4px; /* Bardzo mały padding */
+            white-space: nowrap;
         }
-        @media (max-width: 768px) {
-            #main-wrapper {
-                width: 95%;
-                height: 600px;
-            }
-            .view {
-                flex-direction: column;
-            }
-            #view-a {
-                flex-direction: column;
-            }
-            .history-card {
-                flex-direction: column;
-            }
-            .card-image-wrapper {
-                flex: 0 0 250px;
-            }
-            .card-content {
-                padding: 20px;
-            }
+        tr.table-row-animate:nth-child(even) {
+            background-color: rgba(255,255,255,0.03);
         }
     </style>
 </head>
 <body>
-    <div id="main-wrapper">
-        <!-- WIDOK A: ZEGAR + NUMER (Zmodernizowany) -->
-        <div id="view-a" class="view active">
-            <div id="clock-panel" class="glass-panel panel-a">
-                <div id="dayofweek">...</div>
-                <div id="current-date">...</div>
-                <div id="current-time">00:00</div>
-            </div>
-            <div id="game-panel" class="glass-panel panel-a">
-                <div class="game-title">Lucky Number</div>
-                <div id="lucky-content-wrapper">
-                    <div id="lucky-dice-column">
-                        <!-- Kostki będą generowane przez JS -->
-                    </div>
-                    <div id="lucky-number-text">?</div>
+
+    <!-- Główny kontener 640x496 -->
+    <div id="slide-container" class="p-4">
+        
+        <!-- Header - Kompaktowy -->
+        <header class="text-center mb-2 shrink-0">
+            <h1 class="text-2xl font-bold gold-text leading-tight">LIGA MISTRZÓW</h1>
+            <p class="text-[10px] text-red-200 tracking-widest uppercase">Klasyfikacja Generalna 2025/26</p>
+        </header>
+
+        <!-- Grid Layout - Wymuszony 2 kolumny, elastyczna wysokość -->
+        <div class="grid grid-cols-2 gap-3 h-full overflow-hidden">
+            
+            <!-- Tabela 3-4 -->
+            <div class="glass-panel rounded-lg overflow-hidden flex flex-col h-full">
+                <div class="bg-red-900/50 p-1 border-b border-yellow-900/50 shrink-0">
+                    <h2 class="text-sm font-bold text-center text-yellow-100">KLASY 3-4</h2>
+                </div>
+                <div class="overflow-y-auto flex-grow">
+                    <table class="w-full text-left text-[10px]">
+                        <thead>
+                            <tr class="text-yellow-500 border-b border-red-900/50 text-[9px]">
+                                <th class="text-center w-6">Msc</th>
+                                <th class="">Klasa</th>
+                                <th class="text-center">G1</th>
+                                <th class="text-center">G2</th>
+                                <th class="text-center font-bold">SUMA</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-red-900/30">
+                            <!-- 1. -->
+                            <tr class="bg-yellow-900/20 font-bold text-yellow-400">
+                                <td class="text-center">1.</td>
+                                <td>IV OMEGA</td>
+                                <td class="text-center text-gray-400 font-normal">13</td>
+                                <td class="text-center text-gray-400 font-normal">17,5</td>
+                                <td class="text-center text-xs">30,5</td>
+                            </tr>
+                            <!-- 2. -->
+                            <tr>
+                                <td class="text-center text-gray-300 font-bold">2.</td>
+                                <td>IV ALFA</td>
+                                <td class="text-center text-gray-400">13,5</td>
+                                <td class="text-center text-gray-400">16</td>
+                                <td class="text-center font-bold">29,5</td>
+                            </tr>
+                            <!-- 3. -->
+                            <tr>
+                                <td class="text-center text-orange-400 font-bold">3.</td>
+                                <td>III GAMMA</td>
+                                <td class="text-center text-gray-400">12</td>
+                                <td class="text-center text-gray-400">14</td>
+                                <td class="text-center font-bold">26</td>
+                            </tr>
+                            <!-- 4. -->
+                            <tr>
+                                <td class="text-center text-gray-500">4.</td>
+                                <td>III ALFA</td>
+                                <td class="text-center text-gray-500">11</td>
+                                <td class="text-center text-gray-500">11,5</td>
+                                <td class="text-center">22,5</td>
+                            </tr>
+                            <!-- 5. -->
+                            <tr>
+                                <td class="text-center text-gray-500">5.</td>
+                                <td>III OMEGA</td>
+                                <td class="text-center text-gray-500">9,5</td>
+                                <td class="text-center text-gray-500">13</td>
+                                <td class="text-center">22,5</td>
+                            </tr>
+                            <!-- 6. -->
+                            <tr>
+                                <td class="text-center text-gray-500">6.</td>
+                                <td>IV GAMMA</td>
+                                <td class="text-center text-gray-500">11</td>
+                                <td class="text-center text-gray-500">9,5</td>
+                                <td class="text-center">20,5</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-        <!-- WIDOK B: CIEKAWOSTKI -->
-        <div id="view-b" class="view">
-            <div class="history-card glass-panel">
-                <div class="card-image-wrapper">
-                    <img id="history-img" class="card-image" src="" alt="Ciekawostka" referrerpolicy="no-referrer">
+
+            <!-- Tabela 5-8 -->
+            <div class="glass-panel rounded-lg overflow-hidden flex flex-col h-full">
+                <div class="bg-red-900/50 p-1 border-b border-yellow-900/50 shrink-0">
+                    <h2 class="text-sm font-bold text-center text-yellow-100">KLASY 5-8</h2>
                 </div>
-                <div class="card-content">
-                    <div class="watermark-year" id="history-bg-year">----</div>
-                    <div class="card-header-label" id="card-header-label">Czy wiesz, że...</div>
-                    <div class="card-header-date" id="dynamic-header-date">...</div>
-                    <div class="card-text" id="history-text-content">Pobieranie danych...</div>
+                <div class="overflow-y-auto flex-grow">
+                    <table class="w-full text-left text-[10px]">
+                        <thead>
+                            <tr class="text-yellow-500 border-b border-red-900/50 text-[9px]">
+                                <th class="text-center w-6">Msc</th>
+                                <th class="">Klasa</th>
+                                <th class="text-center">G1</th>
+                                <th class="text-center">G2</th>
+                                <th class="text-center font-bold">SUMA</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-red-900/30">
+                            <!-- 1. -->
+                            <tr class="bg-yellow-900/20 font-bold text-yellow-400">
+                                <td class="text-center">1.</td>
+                                <td>VII OMEGA</td>
+                                <td class="text-center text-gray-400 font-normal">19</td>
+                                <td class="text-center text-gray-400 font-normal">18,5</td>
+                                <td class="text-center text-xs">37,5</td>
+                            </tr>
+                            <!-- 2. -->
+                            <tr>
+                                <td class="text-center text-gray-300 font-bold">2.</td>
+                                <td>VIII OMEGA</td>
+                                <td class="text-center text-gray-400">17,5</td>
+                                <td class="text-center text-gray-400">18,5</td>
+                                <td class="text-center font-bold">36</td>
+                            </tr>
+                            <!-- 3. -->
+                            <tr>
+                                <td class="text-center text-orange-400 font-bold">3.</td>
+                                <td>VIII ALFA</td>
+                                <td class="text-center text-gray-400">17</td>
+                                <td class="text-center text-gray-400">17,5</td>
+                                <td class="text-center font-bold">34,5</td>
+                            </tr>
+                            <!-- 4. -->
+                            <tr>
+                                <td class="text-center text-gray-500">4.</td>
+                                <td>VII ALFA</td>
+                                <td class="text-center text-gray-500">18</td>
+                                <td class="text-center text-gray-500">15,5</td>
+                                <td class="text-center">33,5</td>
+                            </tr>
+                            <!-- 5. -->
+                            <tr>
+                                <td class="text-center text-gray-500">5.</td>
+                                <td>VIII GAMMA</td>
+                                <td class="text-center text-gray-500">17</td>
+                                <td class="text-center text-gray-500">15</td>
+                                <td class="text-center">32</td>
+                            </tr>
+                             <!-- 6. -->
+                             <tr>
+                                <td class="text-center text-gray-500">6.</td>
+                                <td>VI OMEGA</td>
+                                <td class="text-center text-gray-500">15</td>
+                                <td class="text-center text-gray-500">11,5</td>
+                                <td class="text-center">26,5</td>
+                            </tr>
+                             <!-- 7. -->
+                             <tr>
+                                <td class="text-center text-gray-500">7.</td>
+                                <td>V ALFA</td>
+                                <td class="text-center text-gray-500">14</td>
+                                <td class="text-center text-gray-500">10</td>
+                                <td class="text-center">24</td>
+                            </tr>
+                             <!-- 8. -->
+                             <tr>
+                                <td class="text-center text-gray-500">8.</td>
+                                <td>V OMEGA</td>
+                                <td class="text-center text-gray-500">11</td>
+                                <td class="text-center text-gray-500">12</td>
+                                <td class="text-center">23</td>
+                            </tr>
+                             <!-- 9. -->
+                             <tr>
+                                <td class="text-center text-gray-500">9.</td>
+                                <td>VI ALFA</td>
+                                <td class="text-center text-gray-500">12</td>
+                                <td class="text-center text-gray-500">10</td>
+                                <td class="text-center">22</td>
+                            </tr>
+                             <!-- 10. -->
+                             <tr>
+                                <td class="text-center text-gray-500">10.</td>
+                                <td>VII GAMMA</td>
+                                <td class="text-center text-gray-500">9,5</td>
+                                <td class="text-center text-gray-500">6</td>
+                                <td class="text-center">15,5</td>
+                            </tr>
+                             <!-- 11. -->
+                             <tr>
+                                <td class="text-center text-gray-500">11.</td>
+                                <td>VI GAMMA</td>
+                                <td class="text-center text-gray-500">9</td>
+                                <td class="text-center text-gray-500">6</td>
+                                <td class="text-center">15</td>
+                            </tr>
+                             <!-- 12. -->
+                             <tr>
+                                <td class="text-center text-gray-500">12.</td>
+                                <td>V GAMMA</td>
+                                <td class="text-center text-gray-500">7</td>
+                                <td class="text-center text-gray-500">5</td>
+                                <td class="text-center">12</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        // --- KONFIGURACJA ---
-        const CONFIG = {
-            viewDuration: 10000, // 10 sekund na widok
-            apiLanguage: 'pl'
-        };
-        // --- BAZA DANYCH ŚWIĄT I DNI NIETYPOWYCH (EDUKACYJNE/DLA DZIECI) ---
-        // Format: "MM-DD": { title: "Tytuł Święta", text: "Opis...", img: "URL" }
-        const SPECIAL_DAYS = {
-            "12-04": {
-                title: "Barbórka",
-                text: "Dziś Barbórka! To tradycyjne święto górników, geologów i wszystkich, którzy wydobywają skarby z wnętrza Ziemi. Górnicy noszą wtedy galowe mundury z czako i pióropuszem!",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Orkiestra_Gornicza_Sanok_2013.JPG/640px-Orkiestra_Gornicza_Sanok_2013.JPG"
-            },
-            "12-06": {
-                title: "Mikołajki",
-                text: "Dziś Mikołajki! Święty Mikołaj odwiedza grzeczne dzieci i zostawia im drobne upominki w butach lub pod poduszką.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Jonathan_G_Meath_portrays_Santa_Claus.jpg/640px-Jonathan_G_Meath_portrays_Santa_Claus.jpg"
-            },
-            "06-01": {
-                title: "Dzień Dziecka",
-                text: "Wszystkiego najlepszego! Dziś Międzynarodowy Dzień Dziecka – czas zabawy, radości i uśmiechu.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TeddyBear.jpg/640px-TeddyBear.jpg"
-            },
-            "03-21": {
-                title: "Pierwszy Dzień Wiosny",
-                text: "Dziś witamy Wiosnę! Przyroda budzi się do życia, a dni stają się coraz dłuższe i cieplejsze.",
-                img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Spring_blooms.jpg/640px-Spring_blooms.jpg"
-            }
-        };
-        // --- FILTR BEZPIECZEŃSTWA (SŁOWA ZAKAZANE) ---
-        const BAD_WORDS = [
-            "zginął", "zmarł", "śmierć", "zabity", "morderstw", "wojna", "bitwa", "atak", "zamach",
-            "krwaw", "ofiar", "eksplozj", "katastrof", "hitler", "nazi", "areszt", "więzien", "skazan"
-        ];
-        // --- DANE ZAPASOWE (FALLBACK - EDUKACYJNE) ---
-        const FALLBACK_DATA = [
-            { year: "1903", text: "Bracia Wright dokonali pierwszego udanego lotu samolotem, spełniając marzenie o lataniu.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Wright_First_Flight_1903.jpg/800px-Wright_First_Flight_1903.jpg" },
-            { year: "1969", text: "Neil Armstrong jako pierwszy człowiek stanął na Księżycu. Powiedział: 'To mały krok dla człowieka, ale wielki skok dla ludzkości'.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Aldrin_Apollo_11_original.jpg/640px-Aldrin_Apollo_11_original.jpg" },
-            { year: "1452", text: "Urodził się Leonardo da Vinci – genialny artysta i wynalazca, który namalował 'Mona Lisę'.", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Leonardo_self.jpg/640px-Leonardo_self.jpg" }
-        ];
-        // --- ZMIENNE STANU ---
-        let currentView = 'a'; // 'a' lub 'b'
-        let historyEvents = [];
-        let currentEventIndex = 0;
-        // --- FUNKCJE POMOCNICZE ---
-        const getEl = (id) => document.getElementById(id);
-        // --- ZEGAR ---
-        function updateClock() {
-            const now = new Date();
-            const days = ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'];
-            const months = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
-            getEl('dayofweek').textContent = days[now.getDay()];
-            getEl('current-date').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            getEl('current-time').textContent = `${hours}:${minutes}`;
-        }
-        // --- KOSTKI I SZCZĘŚLIWY NUMER ---
-        function createDice(value) {
-            const dice = document.createElement('div');
-            dice.className = `dice value-${value}`;
-            for (let i = 0; i < value; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                dice.appendChild(dot);
-            }
-            return dice;
-        }
-        function rollDice() {
-            const diceContainer = getEl('lucky-dice-column');
-            diceContainer.innerHTML = '';
-            const d1 = Math.floor(Math.random() * 6) + 1;
-            const d2 = Math.floor(Math.random() * 6) + 1;
-            const sum = d1 + d2;
-            diceContainer.appendChild(createDice(d1));
-            diceContainer.appendChild(createDice(d2));
-            getEl('lucky-number-text').textContent = sum;
-        }
-        // --- WIKIPEDIA API & CONTENT LOGIC ---
-        async function fetchHistory() {
-            const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const dateKey = `${month}-${day}`;
-            // 1. POBIERZ DANE Z WIKIPEDII (ZAWSZE)
-            const apiURL = `https://pl.wikipedia.org/api/rest_v1/feed/onthisday/selected/${now.getMonth() + 1}/${now.getDate()}`;
-            let apiEvents = [];
-            try {
-                const response = await fetch(apiURL);
-                const data = await response.json();
-                if (data && data.selected && data.selected.length > 0) {
-                    // Filtrowanie: musi mieć obrazek, krótki tekst i NIE zawierać złych słów
-                    const safeEvents = data.selected.filter(e => {
-                        const hasImage = e.pages && e.pages[0].thumbnail;
-                        const isShort = e.text.length < 250;
-                        const textLower = e.text.toLowerCase();
-                        const isSafe = !BAD_WORDS.some(bad => textLower.includes(bad));
-                        return hasImage && isShort && isSafe;
-                    });
-                    if (safeEvents.length > 0) {
-                        apiEvents = safeEvents.map(e => ({
-                            year: e.year,
-                            text: e.text,
-                            // Lepszy regex do zmiany rozmiaru miniatury na większą (np. 800px)
-                            img: e.pages[0].thumbnail.source.replace(/\/\d+px-/, '/800px-')
-                        }));
-                    }
-                }
-            } catch (error) {
-                console.error("Błąd API Wikipedii:", error);
-            }
-            // 2. SPRAWDŹ CZY DZIŚ JEST ŚWIĘTO I DODAJ NA POCZĄTEK
-            if (SPECIAL_DAYS[dateKey]) {
-                const special = SPECIAL_DAYS[dateKey];
-                const specialEvent = {
-                    year: "ŚWIĘTO",
-                    text: special.text,
-                    img: special.img,
-                    isSpecial: true,
-                    title: special.title
-                };
-                // Dodaj święto na początek listy
-                historyEvents = [specialEvent, ...apiEvents];
-            } else {
-                historyEvents = apiEvents;
-            }
-            // 3. FALLBACK (Jeśli nadal pusto)
-            if (historyEvents.length === 0) {
-                historyEvents = FALLBACK_DATA;
-            }
-        }
-        function updateHistoryView() {
-            if (historyEvents.length === 0) return;
-            const event = historyEvents[currentEventIndex];
-            // Jeśli mamy więcej niż 1 event, cyklujemy. Jeśli to święto (1 event), to zostanie.
-            if (historyEvents.length > 1) {
-                currentEventIndex = (currentEventIndex + 1) % historyEvents.length;
-            }
-            getEl('history-img').src = event.img;
-            if (event.isSpecial) {
-                // Tryb Święta
-                getEl('history-bg-year').textContent = ""; // Ukryj rok w tle
-                getEl('dynamic-header-date').textContent = event.title.toUpperCase();
-                getEl('card-header-label').textContent = "DZIŚ OBCHODZIMY";
-            } else {
-                // Tryb Historyczny
-                getEl('history-bg-year').textContent = event.year;
-                getEl('dynamic-header-date').textContent = `${event.year}`;
-                getEl('card-header-label').textContent = "KARTKA Z KALENDARZA";
-            }
-            getEl('history-text-content').textContent = event.text;
-        }
-        // --- CYKL WIDOKÓW ---
-        function switchView() {
-            const viewA = getEl('view-a');
-            const viewB = getEl('view-b');
-            if (currentView === 'a') {
-                viewA.classList.remove('active');
-                setTimeout(() => {
-                    updateHistoryView();
-                    viewB.classList.add('active');
-                }, 400);
-                currentView = 'b';
-            } else {
-                viewB.classList.remove('active');
-                setTimeout(() => {
-                    rollDice();
-                    viewA.classList.add('active');
-                }, 400);
-                currentView = 'a';
-            }
-        }
-        // --- INICJALIZACJA ---
-        async function init() {
-            updateClock();
-            setInterval(updateClock, 1000);
-            rollDice();
-            await fetchHistory();
-            if (historyEvents.length > 0) updateHistoryView();
-            setInterval(switchView, CONFIG.viewDuration);
-        }
-        init();
-    </script>
 </body>
 </html>
