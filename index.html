@@ -37,6 +37,38 @@
             }
         }
 
+        /* NOWA ANIMACJA: Przesuwający się błysk (Sheen) */
+        @keyframes sheen {
+            0% {
+                left: -100%;
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.3;
+            }
+            40% {
+                left: 200%;
+                opacity: 0;
+            }
+            100% {
+                left: 200%;
+                opacity: 0;
+            }
+        }
+
+        /* NOWA ANIMACJA: Płynące złoto na tekście */
+        @keyframes gold-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* NOWA ANIMACJA: Pulsowanie linii */
+        @keyframes line-pulse {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 2px rgba(248, 113, 113, 0.2); }
+            50% { opacity: 1; box-shadow: 0 0 8px rgba(248, 113, 113, 0.8); }
+        }
+
         #slide-container {
             width: 640px;
             height: 496px;
@@ -49,7 +81,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.1);
+            box-shadow: 0 0 60px rgba(100, 0, 0, 0.3); /* Zwiększony glow */
         }
 
         /* Dekoracyjne drobinki w tle */
@@ -66,13 +98,15 @@
             font-family: 'Cinzel', serif;
         }
         
-        /* Złoty tekst z gradientem */
+        /* Złoty tekst z animowanym gradientem */
         .gold-gradient-text {
-            background: linear-gradient(to bottom, #ffd700, #b8860b);
+            background: linear-gradient(90deg, #b8860b 0%, #ffd700 25%, #ffec8b 50%, #ffd700 75%, #b8860b 100%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
             filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+            animation: gold-shift 4s ease-in-out infinite; /* Animacja tekstu */
         }
 
         .glass-panel {
@@ -81,27 +115,68 @@
             border: 1px solid rgba(255, 215, 0, 0.15);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             border-top: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative; /* Dla pseudo-elementu */
+            overflow: hidden; /* Żeby błysk nie wychodził poza ramy */
+        }
+
+        /* EFEKT REFLEKSU ŚWIETLNEGO NA PANELACH */
+        .glass-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-25deg);
+            pointer-events: none;
+            animation: sheen 6s infinite ease-in-out; /* Zapętlona animacja */
+        }
+
+        /* Opóźnienie błysku dla drugiego panelu, żeby nie migały jednocześnie */
+        .glass-panel:nth-child(2)::after {
+            animation-delay: 3s;
         }
         
-        /* Zmniejszony padding dla komórek, żeby wszystko się zmieściło */
+        /* Zmniejszony padding dla komórek */
         td, th {
-            padding: 1px 4px; /* Było 3px 4px */
+            padding: 1px 4px;
             white-space: nowrap;
-            height: 24px; /* Wymuszona wysokość wiersza */
+            height: 24px;
         }
 
         /* Stylizacja wierszy podium */
         .rank-1 {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.0) 100%);
+            /* Wzmocniony gradient */
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%);
             border-left: 3px solid #ffd700;
+            position: relative;
+            /* Nowe: Wewnętrzna poświata */
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1);
         }
+        
+        /* Nowe: Poświata tekstu tylko dla 1. miejsca */
+        .rank-1 td {
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+
         .rank-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.1) 0%, rgba(192, 192, 192, 0.0) 100%);
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.15) 0%, rgba(192, 192, 192, 0.0) 100%);
             border-left: 3px solid #c0c0c0;
         }
         .rank-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.1) 0%, rgba(205, 127, 50, 0.0) 100%);
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(205, 127, 50, 0.0) 100%);
             border-left: 3px solid #cd7f32;
+        }
+
+        /* Delikatny glow separatorów w headerze */
+        .separator-glow {
+            animation: line-pulse 3s infinite ease-in-out;
         }
 
         /* Opóźnienia dla animacji wejścia */
@@ -123,28 +198,24 @@
         tbody tr:nth-child(11) { animation-delay: 0.6s; }
         tbody tr:nth-child(12) { animation-delay: 0.65s; }
 
-        /* Ukrywanie paska przewijania (estetyka) */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
     </style>
 </head>
 <body>
 
-    <div id="slide-container" class="p-3"> <!-- Zmniejszony padding kontenera -->
+    <div id="slide-container" class="p-3"> 
         
         <!-- Header -->
-        <header class="text-center mb-1 shrink-0 relative z-10"> <!-- Zmniejszony margin bottom -->
+        <header class="text-center mb-1 shrink-0 relative z-10"> 
             <h1 class="text-2xl font-black gold-gradient-text tracking-wider">LIGA MISTRZÓW</h1>
             <div class="flex items-center justify-center gap-2 mt-0">
-                <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-red-400 to-transparent"></div>
+                <!-- Dodana klasa separator-glow -->
+                <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-red-400 to-transparent separator-glow"></div>
                 <p class="text-[9px] text-red-100 tracking-[0.2em] uppercase font-bold text-shadow">Klasyfikacja Generalna 2025/26</p>
-                <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-red-400 to-transparent"></div>
+                <!-- Dodana klasa separator-glow -->
+                <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-red-400 to-transparent separator-glow"></div>
             </div>
         </header>
 
@@ -153,10 +224,10 @@
             
             <!-- Tabela 3-4 -->
             <div class="glass-panel rounded-lg overflow-hidden flex flex-col h-full">
-                <div class="bg-gradient-to-r from-red-900/80 to-red-950/80 p-1 border-b border-yellow-900/30 shrink-0">
+                <div class="bg-gradient-to-r from-red-900/80 to-red-950/80 p-1 border-b border-yellow-900/30 shrink-0 relative z-10">
                     <h2 class="text-xs font-bold text-center text-yellow-100 tracking-wider">KLASY 3-4</h2>
                 </div>
-                <div class="overflow-y-auto flex-grow scrollbar-hide">
+                <div class="overflow-y-auto flex-grow scrollbar-hide relative z-10">
                     <table class="w-full text-left text-[10px]">
                         <thead>
                             <tr class="text-yellow-600/80 border-b border-white/5 text-[8px] uppercase tracking-wider">
@@ -217,10 +288,10 @@
 
             <!-- Tabela 5-8 -->
             <div class="glass-panel rounded-lg overflow-hidden flex flex-col h-full">
-                <div class="bg-gradient-to-r from-red-900/80 to-red-950/80 p-1 border-b border-yellow-900/30 shrink-0">
+                <div class="bg-gradient-to-r from-red-900/80 to-red-950/80 p-1 border-b border-yellow-900/30 shrink-0 relative z-10">
                     <h2 class="text-xs font-bold text-center text-yellow-100 tracking-wider">KLASY 5-8</h2>
                 </div>
-                <div class="overflow-y-auto flex-grow scrollbar-hide">
+                <div class="overflow-y-auto flex-grow scrollbar-hide relative z-10">
                     <table class="w-full text-left text-[10px]">
                         <thead>
                             <tr class="text-yellow-600/80 border-b border-white/5 text-[8px] uppercase tracking-wider">
