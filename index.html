@@ -3,395 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liga Mistrzów - Wyniki</title>
+    <title>Akcja Reakcja</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,900;1,900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Lato', sans-serif;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            min-height: 100vh;
             margin: 0;
-            overflow: hidden;
-        }
-        
-        /* Animacja tła */
-        @keyframes subtle-pulse {
-            0% { background-size: 100% 100%; }
-            50% { background-size: 120% 120%; }
-            100% { background-size: 100% 100%; }
-        }
-
-        /* Animacja wejścia wierszy */
-        @keyframes slide-in-up {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* NOWA ANIMACJA: Przesuwający się błysk (Sheen) */
-        @keyframes sheen {
-            0% {
-                left: -100%;
-                opacity: 0;
-            }
-            20% {
-                opacity: 0.3;
-            }
-            40% {
-                left: 200%;
-                opacity: 0;
-            }
-            100% {
-                left: 200%;
-                opacity: 0;
-            }
-        }
-
-        /* NOWA ANIMACJA: Płynące złoto na tekście */
-        @keyframes gold-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* NOWA ANIMACJA: Pulsowanie linii */
-        @keyframes line-pulse {
-            0%, 100% { opacity: 0.5; box-shadow: 0 0 2px rgba(248, 113, 113, 0.2); }
-            50% { opacity: 1; box-shadow: 0 0 8px rgba(248, 113, 113, 0.8); }
-        }
-
-        #slide-container {
-            width: 640px;
-            height: 496px;
-            /* Głęboki gradient z animacją */
-            background: radial-gradient(circle at 50% 30%, #5e0505 0%, #2a0202 50%, #0d0000 100%);
-            color: #f3f4f6;
-            padding-bottom: 82px;
-            box-sizing: border-box;
-            overflow: hidden;
-            position: relative;
             display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 60px rgba(100, 0, 0, 0.3); /* Zwiększony glow */
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Dekoracyjne drobinki w tle */
-        #slide-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            pointer-events: none;
-            opacity: 0.5;
+        /* Stylizacja logo z prezentacji */
+        .logo-text {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            color: #1e293b;
         }
 
-        h1, h2, th {
-            font-family: 'Cinzel', serif;
-        }
-        
-        /* Złoty tekst z animowanym gradientem */
-        .gold-gradient-text {
-            background: linear-gradient(90deg, #b8860b 0%, #ffd700 25%, #ffec8b 50%, #ffd700 75%, #b8860b 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
-            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
-            animation: gold-shift 4s ease-in-out infinite; /* Animacja tekstu */
-        }
-
-        .glass-panel {
-            background: rgba(60, 10, 10, 0.45);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            border-top: 1px solid rgba(255, 215, 0, 0.3);
-            position: relative; /* Dla pseudo-elementu */
-            overflow: hidden; /* Żeby błysk nie wychodził poza ramy */
-        }
-
-        /* EFEKT REFLEKSU ŚWIETLNEGO NA PANELACH */
-        .glass-panel::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(
-                to right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.08) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: skewX(-25deg);
-            pointer-events: none;
-            animation: sheen 6s infinite ease-in-out; /* Zapętlona animacja */
-        }
-
-        /* Opóźnienie błysku dla drugiego panelu, żeby nie migały jednocześnie */
-        .glass-panel:nth-child(2)::after {
-            animation-delay: 3s;
-        }
-        
-        /* Zmniejszony padding dla komórek */
-        td, th {
-            padding: 1px 4px;
-            white-space: nowrap;
-            height: 24px;
-        }
-
-        /* Stylizacja wierszy podium */
-        .rank-1 {
-            /* Wzmocniony gradient */
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%);
-            border-left: 3px solid #ffd700;
+        /* Ramka na ilustracje w stylu prezentacji (zaokrąglona, 3D) */
+        .illustration-frame {
+            background: radial-gradient(circle, #ffffff 0%, #f1f5f9 100%);
+            border: 8px solid white;
+            border-radius: 3rem;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15), 0 5px 15px -5px rgba(0, 0, 0, 0.1);
             position: relative;
-            /* Nowe: Wewnętrzna poświata */
-            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1);
-        }
-        
-        /* Nowe: Poświata tekstu tylko dla 1. miejsca */
-        .rank-1 td {
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .rank-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.15) 0%, rgba(192, 192, 192, 0.0) 100%);
-            border-left: 3px solid #c0c0c0;
+        /* Przyciski w stylu 3D */
+        .btn-3d {
+            transition: all 0.1s;
+            border-bottom-width: 6px;
         }
-        .rank-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(205, 127, 50, 0.0) 100%);
-            border-left: 3px solid #cd7f32;
-        }
-
-        /* Delikatny glow separatorów w headerze */
-        .separator-glow {
-            animation: line-pulse 3s infinite ease-in-out;
+        .btn-3d:active {
+            border-bottom-width: 0px;
+            transform: translateY(6px);
         }
 
-        /* Opóźnienia dla animacji wejścia */
-        tbody tr {
-            opacity: 0;
-            animation: slide-in-up 0.4s ease-out forwards;
+        /* Animacje */
+        .bounce-in {
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
         }
-        /* Kaskada animacji */
-        tbody tr:nth-child(1) { animation-delay: 0.1s; }
-        tbody tr:nth-child(2) { animation-delay: 0.15s; }
-        tbody tr:nth-child(3) { animation-delay: 0.2s; }
-        tbody tr:nth-child(4) { animation-delay: 0.25s; }
-        tbody tr:nth-child(5) { animation-delay: 0.3s; }
-        tbody tr:nth-child(6) { animation-delay: 0.35s; }
-        tbody tr:nth-child(7) { animation-delay: 0.4s; }
-        tbody tr:nth-child(8) { animation-delay: 0.45s; }
-        tbody tr:nth-child(9) { animation-delay: 0.5s; }
-        tbody tr:nth-child(10) { animation-delay: 0.55s; }
-        tbody tr:nth-child(11) { animation-delay: 0.6s; }
-        tbody tr:nth-child(12) { animation-delay: 0.65s; }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .drop-shadow-3d {
+            filter: drop-shadow(0px 10px 8px rgba(0, 0, 0, 0.2));
+        }
 
+        /* Złota odznaka końcowa */
+        .gold-badge {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+            border: 6px solid #fef9c3;
+            box-shadow: 0 10px 25px rgba(202, 138, 4, 0.4), inset 0 0 20px rgba(255,255,255,0.8);
+        }
     </style>
 </head>
-<body>
+<body class="p-4 text-slate-800">
 
-    <div id="slide-container" class="p-3"> 
+    <div id="game-container" class="max-w-2xl w-full bg-white/90 backdrop-blur-sm rounded-[3rem] shadow-2xl overflow-hidden border-4 border-white relative">
         
-        <!-- Header -->
-        <header class="text-center mb-1 shrink-0 relative z-10"> 
-            <h1 class="text-2xl font-black gold-gradient-text tracking-wider">LIGA MISTRZÓW</h1>
-            <div class="flex items-center justify-center gap-2 mt-0">
-                <!-- Dodana klasa separator-glow -->
-                <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-red-400 to-transparent separator-glow"></div>
-                <p class="text-[9px] text-red-100 tracking-[0.2em] uppercase font-bold text-shadow">Klasyfikacja Generalna 2025/26</p>
-                <!-- Dodana klasa separator-glow -->
-                <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-red-400 to-transparent separator-glow"></div>
-            </div>
-        </header>
+        <!-- Pasek postępu -->
+        <div id="progress-bar-container" class="w-full bg-slate-200 h-5 hidden">
+            <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-green-500 h-5 w-0 transition-all duration-500 rounded-r-full shadow-inner"></div>
+        </div>
 
-        <!-- Grid -->
-        <div class="grid grid-cols-2 gap-3 h-full overflow-hidden relative z-10">
+        <!-- EKRAN STARTOWY -->
+        <div id="start-screen" class="p-8 text-center flex flex-col items-center justify-center min-h-[550px]">
             
-            <!-- Tabela 3-4 -->
-            <div class="glass-panel rounded-lg overflow-hidden flex flex-col h-full">
-                <div class="bg-gradient-to-r from-red-900/80 to-red-950/80 p-1 border-b border-yellow-900/30 shrink-0 relative z-10">
-                    <h2 class="text-xs font-bold text-center text-yellow-100 tracking-wider">KLASY 3-4</h2>
+            <!-- Logo Akcja Reakcja -->
+            <div class="mb-10 transform -rotate-2 bg-white p-6 rounded-3xl shadow-lg border-2 border-slate-100 bounce-in">
+                <div class="logo-text text-5xl md:text-6xl flex items-center justify-center gap-2">
+                    AKCJA <span class="text-slate-800">➔</span>
                 </div>
-                <div class="overflow-y-auto flex-grow scrollbar-hide relative z-10">
-                    <table class="w-full text-left text-[10px]">
-                        <thead>
-                            <tr class="text-yellow-600/80 border-b border-white/5 text-[8px] uppercase tracking-wider">
-                                <th class="text-center w-6">Msc</th>
-                                <th>Klasa</th>
-                                <th class="text-center">G1</th>
-                                <th class="text-center">G2</th>
-                                <th class="text-center font-bold text-yellow-500">SUMA</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            <tr class="rank-1">
-                                <td class="text-center font-bold text-yellow-400">1.</td>
-                                <td class="font-bold text-white">IV OMEGA</td>
-                                <td class="text-center text-gray-400 font-normal">13</td>
-                                <td class="text-center text-gray-400 font-normal">17,5</td>
-                                <td class="text-center font-bold text-yellow-400 text-[11px]">30,5</td>
-                            </tr>
-                            <tr class="rank-2">
-                                <td class="text-center text-gray-300 font-bold">2.</td>
-                                <td class="font-bold text-gray-100">IV ALFA</td>
-                                <td class="text-center text-gray-500">13,5</td>
-                                <td class="text-center text-gray-500">16</td>
-                                <td class="text-center font-bold text-gray-200">29,5</td>
-                            </tr>
-                            <tr class="rank-3">
-                                <td class="text-center text-[#cd7f32] font-bold">3.</td>
-                                <td class="font-bold text-gray-200">III GAMMA</td>
-                                <td class="text-center text-gray-500">12</td>
-                                <td class="text-center text-gray-500">14</td>
-                                <td class="text-center font-bold text-[#e6a67c]">26</td>
-                            </tr>
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">4.</td>
-                                <td class="text-gray-300">III ALFA</td>
-                                <td class="text-center text-gray-600">11</td>
-                                <td class="text-center text-gray-600">11,5</td>
-                                <td class="text-center text-gray-400 font-medium">22,5</td>
-                            </tr>
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">5.</td>
-                                <td class="text-gray-300">III OMEGA</td>
-                                <td class="text-center text-gray-600">9,5</td>
-                                <td class="text-center text-gray-600">13</td>
-                                <td class="text-center text-gray-400 font-medium">22,5</td>
-                            </tr>
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">6.</td>
-                                <td class="text-gray-300">IV GAMMA</td>
-                                <td class="text-center text-gray-600">11</td>
-                                <td class="text-center text-gray-600">9,5</td>
-                                <td class="text-center text-gray-400 font-medium">20,5</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="h-2 md:h-3 w-full bg-red-600 rounded-full my-1"></div>
+                <div class="logo-text text-5xl md:text-6xl text-slate-900 mt-1">
+                    REAKCJA
                 </div>
             </div>
 
-            <!-- Tabela 5-8 -->
-            <div class="glass-panel rounded-lg overflow-hidden flex flex-col h-full">
-                <div class="bg-gradient-to-r from-red-900/80 to-red-950/80 p-1 border-b border-yellow-900/30 shrink-0 relative z-10">
-                    <h2 class="text-xs font-bold text-center text-yellow-100 tracking-wider">KLASY 5-8</h2>
+            <p class="text-xl md:text-2xl mb-10 font-bold text-slate-600">
+                Witaj! Zdobądź wiedzę dla prawdziwych bohaterów i zostań Mistrzem Bezpieczeństwa!
+            </p>
+            
+            <button onclick="startGame()" class="btn-3d bg-green-500 border-green-700 text-white text-3xl font-black py-4 px-12 rounded-full hover:bg-green-400">
+                ZACZNIJ GRĘ ▶
+            </button>
+        </div>
+
+        <!-- EKRAN GRY -->
+        <div id="game-screen" class="p-6 md:p-8 hidden min-h-[550px] flex flex-col justify-between">
+            <div>
+                <!-- Górny pasek statusu -->
+                <div class="flex justify-between items-center mb-6 font-black">
+                    <span id="question-counter" class="text-lg text-sky-600 bg-sky-100 border-2 border-sky-200 py-1 px-5 rounded-full">1/5</span>
+                    <span class="text-2xl bg-amber-100 border-2 border-amber-200 py-1 px-4 rounded-full text-amber-600">
+                        ⭐ <span id="score-display">0</span>
+                    </span>
                 </div>
-                <div class="overflow-y-auto flex-grow scrollbar-hide relative z-10">
-                    <table class="w-full text-left text-[10px]">
-                        <thead>
-                            <tr class="text-yellow-600/80 border-b border-white/5 text-[8px] uppercase tracking-wider">
-                                <th class="text-center w-6">Msc</th>
-                                <th>Klasa</th>
-                                <th class="text-center">G1</th>
-                                <th class="text-center">G2</th>
-                                <th class="text-center font-bold text-yellow-500">SUMA</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            <tr class="rank-1">
-                                <td class="text-center font-bold text-yellow-400">1.</td>
-                                <td class="font-bold text-white">VII OMEGA</td>
-                                <td class="text-center text-gray-400 font-normal">19</td>
-                                <td class="text-center text-gray-400 font-normal">18,5</td>
-                                <td class="text-center font-bold text-yellow-400 text-[11px]">37,5</td>
-                            </tr>
-                            <tr class="rank-2">
-                                <td class="text-center text-gray-300 font-bold">2.</td>
-                                <td class="font-bold text-gray-100">VIII OMEGA</td>
-                                <td class="text-center text-gray-500">17,5</td>
-                                <td class="text-center text-gray-500">18,5</td>
-                                <td class="text-center font-bold text-gray-200">36</td>
-                            </tr>
-                            <tr class="rank-3">
-                                <td class="text-center text-[#cd7f32] font-bold">3.</td>
-                                <td class="font-bold text-gray-200">VIII ALFA</td>
-                                <td class="text-center text-gray-500">17</td>
-                                <td class="text-center text-gray-500">17,5</td>
-                                <td class="text-center font-bold text-[#e6a67c]">34,5</td>
-                            </tr>
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">4.</td>
-                                <td class="text-gray-300">VII ALFA</td>
-                                <td class="text-center text-gray-600">18</td>
-                                <td class="text-center text-gray-600">15,5</td>
-                                <td class="text-center text-gray-400 font-medium">33,5</td>
-                            </tr>
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">5.</td>
-                                <td class="text-gray-300">VIII GAMMA</td>
-                                <td class="text-center text-gray-600">17</td>
-                                <td class="text-center text-gray-600">15</td>
-                                <td class="text-center text-gray-400 font-medium">32</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">6.</td>
-                                <td class="text-gray-300">VI OMEGA</td>
-                                <td class="text-center text-gray-600">15</td>
-                                <td class="text-center text-gray-600">11,5</td>
-                                <td class="text-center text-gray-400 font-medium">26,5</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">7.</td>
-                                <td class="text-gray-300">V ALFA</td>
-                                <td class="text-center text-gray-600">14</td>
-                                <td class="text-center text-gray-600">10</td>
-                                <td class="text-center text-gray-400 font-medium">24</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">8.</td>
-                                <td class="text-gray-300">V OMEGA</td>
-                                <td class="text-center text-gray-600">11</td>
-                                <td class="text-center text-gray-600">12</td>
-                                <td class="text-center text-gray-400 font-medium">23</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">9.</td>
-                                <td class="text-gray-300">VI ALFA</td>
-                                <td class="text-center text-gray-600">12</td>
-                                <td class="text-center text-gray-600">10</td>
-                                <td class="text-center text-gray-400 font-medium">22</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">10.</td>
-                                <td class="text-gray-300">VII GAMMA</td>
-                                <td class="text-center text-gray-600">9,5</td>
-                                <td class="text-center text-gray-600">6</td>
-                                <td class="text-center text-gray-400 font-medium">15,5</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">11.</td>
-                                <td class="text-gray-300">VI GAMMA</td>
-                                <td class="text-center text-gray-600">9</td>
-                                <td class="text-center text-gray-600">6</td>
-                                <td class="text-center text-gray-400 font-medium">15</td>
-                            </tr>
-                             <tr class="hover:bg-white/5 transition-colors">
-                                <td class="text-center text-gray-600">12.</td>
-                                <td class="text-gray-300">V GAMMA</td>
-                                <td class="text-center text-gray-600">7</td>
-                                <td class="text-center text-gray-600">5</td>
-                                <td class="text-center text-gray-400 font-medium">12</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                
+                <!-- Miejsce na grafikę z prezentacji -->
+                <div class="illustration-frame w-full h-48 md:h-64 mb-6 bounce-in bg-slate-50 p-2">
+                    <div id="question-image" class="w-full h-full border-4 border-dashed border-slate-300 rounded-2xl flex items-center justify-center text-center p-4 bg-white">
+                        <!-- W to miejsce zostanie wstawiona grafika z bazy pytań -->
+                    </div>
                 </div>
+                
+                <h2 id="question-text" class="text-2xl md:text-3xl font-black text-center mb-6 text-slate-800 leading-tight">
+                    Pytanie pojawi się tutaj?
+                </h2>
+
+                <!-- Miejsce na przycisk odtwarzania dźwięku -->
+                <div id="sound-btn-container" class="text-center mb-8"></div>
+            </div>
+
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Przyciski odpowiedzi -->
             </div>
         </div>
+
+        <!-- EKRAN KOŃCOWY -->
+        <div id="end-screen" class="p-8 text-center hidden min-h-[550px] flex flex-col items-center justify-center">
+            
+            <div class="gold-badge w-64 h-64 rounded-full flex flex-col items-center justify-center bounce-in mb-8 relative">
+                <div class="text-7xl drop-shadow-3d mb-2">⭐</div>
+                <div class="text-white font-black text-2xl uppercase tracking-widest drop-shadow-md">Mistrz</div>
+                <div class="text-white font-black text-lg uppercase tracking-wider drop-shadow-md">Bezpieczeństwa</div>
+                <!-- Wstążka -->
+                <div class="absolute -bottom-6 bg-red-600 text-white px-6 py-2 rounded-lg font-bold border-4 border-red-800 text-xl transform -rotate-3">
+                    GRATULACJE!
+                </div>
+            </div>
+
+            <p id="final-score" class="text-2xl mt-4 mb-10 font-black text-slate-700 bg-slate-100 py-3 px-8 rounded-full border-4 border-white shadow-sm">
+                Twój wynik: 5/5 ⭐
+            </p>
+
+            <button onclick="resetGame()" class="btn-3d bg-sky-500 border-sky-700 text-white text-2xl font-black py-4 px-10 rounded-full hover:bg-sky-400">
+                Zagraj ponownie 🔄
+            </button>
+        </div>
+
+        <!-- MODAL (Informacja zwrotna) -->
+        <div id="feedback-modal" class="absolute inset-0 bg-white/95 backdrop-blur-md hidden flex flex-col items-center justify-center p-8 z-50 text-center">
+            <div id="feedback-emoji" class="text-9xl mb-6 drop-shadow-3d bounce-in">✅</div>
+            <h2 id="feedback-title" class="text-5xl font-black mb-4 uppercase">Świetnie!</h2>
+            <div class="bg-slate-100 p-6 rounded-3xl border-4 border-white shadow-lg mb-10">
+                <p id="feedback-text" class="text-2xl font-bold text-slate-700 leading-relaxed">Wyjaśnienie odpowiedzi</p>
+            </div>
+            <button onclick="nextQuestion()" id="next-button" class="btn-3d bg-sky-500 border-sky-700 text-white text-3xl font-black py-4 px-12 rounded-full hover:bg-sky-400">
+                DALEJ ▶
+            </button>
+        </div>
+
     </div>
+
+    <!-- Biblioteka do konfetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // Baza pytań z przygotowanymi zastępczymi grafikami wizualnymi
+        const questions = [
+            {
+                graphic: "👨‍🚒 🚒", // Zastępuje ilustrację: Strażak przy wozie strażackim
+                text: "Zauważasz groźny pożar. Jaki numer wykręcasz na telefonie, żeby wezwać naszych Superbohaterów?",
+                options: [
+                    { text: "112", correct: true },
+                    { text: "123", correct: false }
+                ],
+                explanationPos: "Zgadza się! 112 to główny numer alarmowy. Straż Pożarna, Policja i Pogotowie są zawsze gotowi, by Ci pomóc.",
+                explanationNeg: "Spróbuj zapamiętać! Najważniejszy numer, pod którym uzyskasz pomoc, to 112."
+            },
+            {
+                graphic: "🚨 📢", // Zastępuje ilustrację: Syrena alarmowa na słupie
+                text: "Słyszysz syrenę. Jej dźwięk jest falujący (raz ciszej, raz głośniej) i trwa aż 3 minuty. Co to znaczy?",
+                hasSound: "siren", // Flaga uaktywniająca przycisk dźwięku
+                options: [
+                    { text: "To ogłoszenie alarmu. Słucham dorosłych!", correct: true },
+                    { text: "To odwołanie alarmu. Mogę iść się bawić.", correct: false }
+                ],
+                explanationPos: "Brawo! Falujący dźwięk przez 3 minuty to OGŁOSZENIE ALARMU. Wtedy dorośli włączają radio i słuchamy komunikatów.",
+                explanationNeg: "Pamiętaj: falujący dźwięk to OGŁOSZENIE alarmu. Odwołanie to dźwięk ciągły i równy."
+            },
+            {
+                graphic: "🏃‍♂️ ↕️", // Zastępuje ilustrację: Schody z dużą zieloną strzałką
+                text: "W szkole ogłoszono ewakuację. Pamiętasz Zasadę Schodów?",
+                options: [
+                    { text: "Winda odpoczywa, my wybieramy schody!", correct: true },
+                    { text: "Zjeżdżam windą, bo jest szybciej.", correct: false }
+                ],
+                explanationPos: "Super! W czasie pożaru nigdy nie używamy windy. Bezpieczny, spokojny spacer po schodach to podstawa.",
+                explanationNeg: "Oj nie! Pamiętaj: Winda odpoczywa, my zawsze wybieramy schody!"
+            },
+            {
+                graphic: "🎒 🚶‍♂️", // Zastępuje ilustrację: Tłum dzieci i zgubiony plecak/miś
+                text: "Idziesz w dużym tłumie (płyniesz z prądem) i nagle upada Ci plecak. Co robisz?",
+                options: [
+                    { text: "Ratuję siebie! Zostawiam plecak i idę dalej.", correct: true },
+                    { text: "Zatrzymuję się i szybko go podnoszę.", correct: false }
+                ],
+                explanationPos: "Dokładnie tak! Ratujemy siebie, nie rzeczy. Twoje bezpieczeństwo jest najważniejsze.",
+                explanationNeg: "To bardzo niebezpieczne! W tłumie nie wolno się schylać. Rzeczy można odkupić, Ciebie nie!"
+            },
+            {
+                graphic: "🐢 🛡️", // Zastępuje ilustrację: Dziecko robiące "żółwika"
+                text: "Co powinieneś zrobić, jeśli upadniesz w tłumie i nie masz siły wstać?",
+                options: [
+                    { text: "Leżę płasko na brzuchu.", correct: false },
+                    { text: "Zwijam się w 'żółwika' i chronię głowę.", correct: true }
+                ],
+                explanationPos: "Mistrzowska odpowiedź! Jeśli nie możesz wstać, zrób 'żółwika' - skul się i osłoń głowę rękami.",
+                explanationNeg: "Najbezpieczniej jest zwinąć się w kulkę jak żółw i chronić głowę rękami!"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const progressBarContainer = document.getElementById('progress-bar-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            progressBarContainer.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScore();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            const progress = ((currentQuestionIndex) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            document.getElementById('question-counter').innerText = `${currentQuestionIndex + 1}/${questions.length}`;
+            
+            // Wstawianie grafiki zastępczej z bazy pytań
+            const imgEl = document.getElementById('question-image');
+            imgEl.innerHTML = `<span class="text-7xl md:text-8xl drop-shadow-3d filter hover:scale-110 transition-transform duration-300 cursor-default select-none">${currentQuestion.graphic}</span>`;
+            
+            // Animacja ramki na grafikę
+            const frameEl = imgEl.parentElement;
+            frameEl.classList.remove('bounce-in');
+            void frameEl.offsetWidth; 
+            frameEl.classList.add('bounce-in');
+
+            document.getElementById('question-text').innerText = currentQuestion.text;
+
+            // Obsługa przycisku dźwięku (dla syreny 30-sekundowej, wg wcześniejszych ustaleń)
+            const soundBtnContainer = document.getElementById('sound-btn-container');
+            if (currentQuestion.hasSound === 'siren') {
+                soundBtnContainer.innerHTML = `<button onclick="playSiren()" class="btn-3d bg-amber-400 border-amber-600 text-amber-900 font-bold py-3 px-8 rounded-full inline-flex items-center shadow-sm hover:bg-amber-300"><span class="text-3xl mr-3">🔊</span> Posłuchaj sygnału</button>`;
+            } else {
+                soundBtnContainer.innerHTML = '';
+            }
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                // Styl przycisków
+                button.className = "btn-3d bg-slate-50 border-slate-300 text-slate-700 hover:bg-sky-50 hover:border-sky-400 font-bold text-lg md:text-xl py-4 px-6 rounded-3xl text-left flex items-center shadow-sm";
+                button.innerHTML = `<span class="bg-white shadow-sm rounded-full w-10 h-10 flex items-center justify-center mr-4 shrink-0 text-xl border-2 border-slate-100">👉</span> <span>${option.text}</span>`;
+                button.onclick = () => checkAnswer(option.correct, currentQuestion);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        let activeAudioCtx = null;
+
+        // Funkcja generująca falujący dźwięk syreny (Web Audio API)
+        function playSiren() {
+            if (activeAudioCtx) {
+                activeAudioCtx.close();
+            }
+            activeAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = activeAudioCtx.createOscillator();
+            const gainNode = activeAudioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(activeAudioCtx.destination);
+
+            oscillator.type = 'sine';
+            const now = activeAudioCtx.currentTime;
+
+            // Modulacja dźwięku - cykl 10 sekundowy
+            oscillator.frequency.setValueAtTime(400, now);
+            for (let i = 0; i < 3; i++) { // gramy 3 pełne cykle (3 x 10s = 30 sekund)
+                let startTime = now + (i * 10);
+                
+                // 1. 1,5 sekundy powolnego wznoszenia
+                oscillator.frequency.linearRampToValueAtTime(750, startTime + 1.5); 
+                
+                // 2. 7 sekund trwania wysokiego dźwięku (1.5 + 7.0 = 8.5)
+                oscillator.frequency.linearRampToValueAtTime(750, startTime + 8.5); 
+                
+                // 3. 1,5 sekundy powolnego opadania (8.5 + 1.5 = 10.0)
+                oscillator.frequency.linearRampToValueAtTime(400, startTime + 10.0); 
+            }
+
+            // Ustawienie przyjemnej dla ucha głośności i wydłużenie czasu do 30 sekund
+            gainNode.gain.setValueAtTime(0.15, now); 
+            gainNode.gain.linearRampToValueAtTime(0.15, now + 29.0);
+            gainNode.gain.linearRampToValueAtTime(0, now + 30.0); // Wyciszenie na końcu
+
+            oscillator.start(now);
+            oscillator.stop(now + 30.0);
+        }
+
+        function stopAudio() {
+            if (activeAudioCtx) {
+                activeAudioCtx.close();
+                activeAudioCtx = null;
+            }
+        }
+
+        function checkAnswer(isCorrect, questionObj) {
+            stopAudio(); // Zatrzymaj dźwięk po kliknięciu odpowiedzi
+            feedbackModal.classList.remove('hidden');
+            const feedbackEmoji = document.getElementById('feedback-emoji');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            const nextBtn = document.getElementById('next-button');
+
+            if (isCorrect) {
+                score++;
+                updateScore();
+                feedbackEmoji.innerText = "⭐";
+                feedbackTitle.innerText = "Świetnie!";
+                feedbackTitle.className = "text-5xl font-black mb-4 text-green-500 uppercase";
+                feedbackText.innerText = questionObj.explanationPos;
+                nextBtn.className = "btn-3d bg-green-500 border-green-700 text-white text-3xl font-black py-4 px-12 rounded-full hover:bg-green-400";
+                
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ef4444', '#fbbf24', '#3b82f6'] // kolory nawiązujące do logo i służb
+                });
+            } else {
+                feedbackEmoji.innerText = "💡";
+                feedbackTitle.innerText = "Prawie się udało!";
+                feedbackTitle.className = "text-5xl font-black mb-4 text-amber-500 uppercase";
+                feedbackText.innerText = questionObj.explanationNeg;
+                nextBtn.className = "btn-3d bg-amber-500 border-amber-700 text-white text-3xl font-black py-4 px-12 rounded-full hover:bg-amber-400";
+            }
+        }
+
+        function nextQuestion() {
+            feedbackModal.classList.add('hidden');
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            progressBar.style.width = `100%`;
+            gameScreen.classList.add('hidden');
+            progressBarContainer.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            
+            document.getElementById('final-score').innerText = `Twój wynik: ${score} / ${questions.length} ⭐`;
+
+            // Finałowe konfetti
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function resetGame() {
+            endScreen.classList.add('hidden');
+            startGame();
+        }
+
+        function updateScore() {
+            document.getElementById('score-display').innerText = score;
+        }
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+    </script>
 </body>
 </html>
+
+
