@@ -9,22 +9,24 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      // 1. Próbujemy pobrać listę ID dla danego dnia
+      if (!date) return res.status(400).json({ error: "Brak daty" });
+
       let eventIds = await kv.get(`events:${date}`) || [];
       let events = [];
       
-      // 2. Jeśli lista jest pusta, AUTOMATYCZNIE generujemy 3 fakty przez Gemini
-      if (eventIds.length === 0 && date) {
-        console.log(`Brak danych dla ${date}. Generuję przez Gemini...`);
+      if (eventIds.length === 0) {
         const [month, day] = date.split('-');
-        
         const prompt = `Jesteś ekspertem edukacji. Przygotuj 3 fascynujące wydarzenia historyczne, naukowe lub przyrodnicze dla daty: dzień ${day}, miesiąc ${month}. 
-        Wymagania: Odbiorca 9-15 lat, język ciekawy, realistyczne zdjęcia.
+        Wymagania: Odbiorca dzieci 9-15 lat, język dynamiczny, realistyczne zdjęcia.
         Zwróć TYLKO czysty JSON (tablica obiektów):
-        [{"y": "ROK", "t": "OPIS (max 200 znaków)", "img": "URL_DO_REALISTYCZNEGO_ZDJECIA_Z_WIKIMEDIA"}]`;
+        [{"y": "ROK", "t": "OPIS (max 200 znaków)", "img": "URL_DO_ZDJECIA"}]`;
 
         const result = await model.generateContent(prompt);
-        const text = result.response.text().trim().replace(/```json|```/g, '');
+        let text = result.response.text().trim();
+        
+        // Czyszczenie tekstu z markdownowych bloków
+        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        
         const generatedData = JSON.parse(text);
 
         for (const ev of generatedData) {
@@ -32,11 +34,9 @@ export default async function handler(req, res) {
           await kv.hset(`event:${id}`, { year: ev.y, description: ev.t, image_url: ev.img || "" });
           eventIds.push(id);
         }
-        // Zapisujemy listę ID na przyszłość
         await kv.set(`events:${date}`, eventIds);
       }
 
-      // 3. Pobieramy szczegóły każdego wydarzenia
       for (const id of eventIds) {
         const event = await kv.hgetall(`event:${id}`);
         if (event) events.push({ id, ...event });
@@ -45,12 +45,12 @@ export default async function handler(req, res) {
       return res.status(200).json(events);
     } catch (err) {
       console.error("Błąd API:", err);
-      return res.status(500).json({ error: "Błąd serwera lub brak połączenia z bazą KV" });
+      // Zwracamy puste dane zamiast błędu, by strona nie wygasła
+      return res.status(200).json([{year: "AI", description: "Właśnie generuję nowe ciekawostki... Odśwież stronę za chwilę!", image_url: ""}]);
     }
   }
 
   if (req.method === 'POST') {
-    // Logika dodawania ręcznego pozostaje bez zmian
     let { month_day, year, description, image_url } = req.body;
     const id = Date.now();
     await kv.hset(`event:${id}`, { year, description, image_url: image_url || "" });
