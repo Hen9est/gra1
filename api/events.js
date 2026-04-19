@@ -1,82 +1,56 @@
 import Redis from 'ioredis';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Konfiguracja bezpiecznego połączenia z Redisem (wymagane przez Upstash)
-const redisUrl = process.env.REDIS_URL || "";
-const kv = redisUrl ? new Redis(redisUrl, {
-  tls: {
-    rejectUnauthorized: false
-  }
+// 1. Połączenie z Bazą (Upstash Redis)
+const kv = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL, {
+  tls: { rejectUnauthorized: false }
 }) : null;
 
+// 2. Konfiguracja AI (Gemini)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export default async function handler(req, res) {
-  const { date } = req.query;
-  console.log(`Log: Zapytanie o datę ${date}`);
-
-  if (req.method !== 'GET') return res.status(405).end();
+  const { date } = req.query; // Format: MM-DD
+  
+  if (!date) return res.status(400).json({ error: "Brak daty" });
 
   try {
-    if (!kv) throw new Error("System nie widzi REDIS_URL. Sprawdź Environment Variables.");
+    if (!kv) throw new Error("Brak REDIS_URL w ustawieniach Vercel");
 
-    // 1. Próba pobrania listy ID
-    let eventIds = [];
-    const rawIds = await kv.get(`events:${date}`);
-    if (rawIds) {
-      eventIds = JSON.parse(rawIds);
-    }
+    // Sprawdź czy mamy już dane w bazie
+    let cachedData = await kv.get(`day:${date}`);
     
-    // 2. Jeśli lista pusta -> Generujemy przez AI
-    if (eventIds.length === 0) {
-      console.log("Log: Generuję nowe fakty przez Gemini...");
-      const [month, day] = date.split('-');
-      const prompt = `Jesteś historykiem. Podaj 3 fascynujące ciekawostki (nauka, kosmos, historia) na dzień ${day}.${month} dla dzieci 9-15 lat. 
-      Zwróć TYLKO czysty JSON: [{"y":"ROK","t":"OPIS (max 200 znaków)","img":"URL_ZDJECIA_Z_WIKIMEDIA"}]`;
-      
-      const result = await model.generateContent(prompt);
-      let text = result.response.text().trim();
-      // Czyścimy tekst ze wszystkiego co nie jest JSONem
-      text = text.substring(text.indexOf('['), text.lastIndexOf(']') + 1);
-      
-      const generatedData = JSON.parse(text);
-
-      for (const ev of generatedData) {
-        const id = `ev_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
-        await kv.hset(`event:${id}`, {
-          year: ev.y,
-          description: ev.t,
-          image_url: ev.img || ""
-        });
-        eventIds.push(id);
-      }
-      // Zapisujemy listę ID na przyszłość
-      await kv.set(`events:${date}`, JSON.stringify(eventIds));
+    if (cachedData) {
+      console.log(`Zwracam dane z bazy dla: ${date}`);
+      return res.status(200).json(JSON.parse(cachedData));
     }
 
-    // 3. Pobieramy pełne dane o wydarzeniach
-    const events = [];
-    for (const id of eventIds) {
-      const data = await kv.hgetall(`event:${id}`);
-      if (data && data.year) {
-        events.push({ id, ...data });
-      }
-    }
+    // Jeśli nie ma - poproś Gemini
+    console.log(`Generuję nowe dane przez AI dla: ${date}`);
+    const [m, d] = date.split('-');
+    const prompt = `Jesteś historykiem. Podaj 3 fascynujące fakty na dzień ${d}.${m} dla dzieci 9-15 lat. Zwróć WYŁĄCZNIE czysty JSON (tablica): [{"y":"ROK","t":"OPIS (max 200 znaków)","img":"URL_ZDJECIA_Z_WIKIMEDIA"}]`;
 
-    // Jeśli wszystko zawiedzie, dajemy fakt startowy
-    if (events.length === 0) {
-      events.push({ year: "2026", description: "Ciekawostki są właśnie przygotowywane przez AI. Odśwież stronę za moment!", image_url: "" });
-    }
+    const result = await model.generateContent(prompt);
+    let text = result.response.text().trim();
+    
+    // Wyciągnij tylko tablicę JSON (naprawa błędów AI)
+    const jsonStart = text.indexOf('[');
+    const jsonEnd = text.lastIndexOf(']') + 1;
+    const cleanJson = text.substring(jsonStart, jsonEnd);
+    
+    const events = JSON.parse(cleanJson);
+
+    // Zapisz w bazie na stałe
+    await kv.set(`day:${date}`, JSON.stringify(events));
 
     return res.status(200).json(events);
 
-  } catch (err) {
-    console.error("Błąd API:", err);
-    return res.status(200).json([{
-      year: "INFO", 
-      description: `Błąd: ${err.message}. Upewnij się, że baza Redis i klucz Gemini są poprawnie skonfigurowane.`, 
-      image_url: ""
-    }]);
+  } catch (error) {
+    console.error("Błąd API:", error);
+    // Zwróć wiadomość startową jeśli wszystko inne zawiedzie
+    return res.status(200).json([
+      { y: "2026", t: "Właśnie przygotowujemy dla Ciebie ciekawostki historyczne. Odśwież stronę za 10 sekund!", img: "" }
+    ]);
   }
 }
