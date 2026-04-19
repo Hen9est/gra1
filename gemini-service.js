@@ -1,10 +1,11 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-require('dotenv').config();
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-async function suggestImageUrl(year, description) {
+export async function suggestImageUrl(year, description) {
     if (!process.env.GEMINI_API_KEY) return null;
 
     const prompt = `Jesteś ekspertem od edukacji dzieci (9-15 lat). Na podstawie wydarzenia: "${year}: ${description}" 
@@ -23,5 +24,3 @@ async function suggestImageUrl(year, description) {
         return null;
     }
 }
-
-module.exports = { suggestImageUrl };

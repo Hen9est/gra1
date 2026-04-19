@@ -1,8 +1,13 @@
-const express = require('express');
-const path = require('path');
-const db = require('./db');
-const gemini = require('./gemini-service');
-require('dotenv').config();
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import db from './db.js'; // Zmienimy db.js na export default
+import { suggestImageUrl } from './gemini-service.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,40 +25,15 @@ app.get('/api/events/:date', async (req, res) => {
     }
 });
 
-// Dodaj nowe wydarzenie (z opcjonalnym automatycznym obrazkiem)
+// Dodaj nowe wydarzenie
 app.post('/api/events', async (req, res) => {
     let { month_day, year, description, image_url } = req.body;
-    
     try {
         if (!image_url && description) {
-            image_url = await gemini.suggestImageUrl(year, description);
+            image_url = await suggestImageUrl(year, description);
         }
         const id = await db.addEvent(month_day, year, description, image_url);
         res.json({ id, image_url });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Aktualizuj wydarzenie
-app.put('/api/events/:id', async (req, res) => {
-    let { year, description, image_url } = req.body;
-    try {
-        if (!image_url && description) {
-            image_url = await gemini.suggestImageUrl(year, description);
-        }
-        await db.updateEvent(req.params.id, year, description, image_url);
-        res.json({ success: true, image_url });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Usuń wydarzenie
-app.delete('/api/events/:id', async (req, res) => {
-    try {
-        await db.deleteEvent(req.params.id);
-        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
