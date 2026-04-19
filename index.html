@@ -208,7 +208,7 @@
             const now = new Date();
             const dateStr = `${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
             try {
-                const res = await fetch(`/api/events/${dateStr}`);
+                const res = await fetch(`/api/events?date=${dateStr}`);
                 todaysEvents = await res.json();
                 if (todaysEvents.length === 0) {
                     todaysEvents = [{year: "2026", description: "Dziś tworzymy nową historię w Antygravity!", image_url: ""}];
@@ -243,7 +243,7 @@
         
         async function refreshEditor() {
             const dateStr = `${sm.value}-${sd.value}`;
-            const res = await fetch(`/api/events/${dateStr}`);
+            const res = await fetch(`/api/events?date=${dateStr}`);
             const events = await res.json();
             list.innerHTML = '';
             events.forEach(ev => {
