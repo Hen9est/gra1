@@ -5,38 +5,49 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export default async function handler(req, res) {
-  const { date } = req.query; // Format MM-DD
+  const { date } = req.query;
+  console.log(`Zapytanie o datę: ${date}`);
 
   if (req.method === 'GET') {
     try {
-      if (!date) return res.status(400).json({ error: "Brak daty" });
+      if (!date) return res.status(400).json({ error: "Brak daty w zapytaniu" });
 
-      let eventIds = await kv.get(`events:${date}`) || [];
-      let events = [];
-      
+      // Sprawdź połączenie z bazą
+      let eventIds;
+      try {
+        eventIds = await kv.get(`events:${date}`) || [];
+      } catch (kvError) {
+        console.error("Błąd połączenia z Vercel KV:", kvError);
+        return res.status(500).json({ error: "Baza KV nie jest podłączona lub skonfigurowana" });
+      }
+
       if (eventIds.length === 0) {
+        console.log(`Baza pusta dla ${date}. Proszę Gemini o pomoc...`);
+        
+        if (!process.env.GEMINI_API_KEY) {
+          console.error("BRAK KLUCZA GEMINI_API_KEY W SETTINGS!");
+          return res.status(200).json([{year: "BŁĄD", description: "Brak klucza API Gemini w ustawieniach Vercel!", image_url: ""}]);
+        }
+
         const [month, day] = date.split('-');
-        const prompt = `Jesteś ekspertem edukacji. Przygotuj 3 fascynujące wydarzenia historyczne, naukowe lub przyrodnicze dla daty: dzień ${day}, miesiąc ${month}. 
-        Wymagania: Odbiorca dzieci 9-15 lat, język dynamiczny, realistyczne zdjęcia.
-        Zwróć TYLKO czysty JSON (tablica obiektów):
-        [{"y": "ROK", "t": "OPIS (max 200 znaków)", "img": "URL_DO_ZDJECIA"}]`;
+        const prompt = `Jesteś historykiem dla dzieci 9-15 lat. Podaj 3 fakty na dzień ${day}.${month}. Zwróć TYLKO JSON: [{"y":"ROK","t":"OPIS","img":"URL"}]`;
 
         const result = await model.generateContent(prompt);
-        let text = result.response.text().trim();
+        let text = result.response.text().trim().replace(/```json/g, '').replace(/```/g, '').trim();
         
-        // Czyszczenie tekstu z markdownowych bloków
-        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        
+        console.log("Gemini zwrócił tekst:", text);
         const generatedData = JSON.parse(text);
 
         for (const ev of generatedData) {
-          const id = Date.now() + Math.random();
+          const id = `ev_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           await kv.hset(`event:${id}`, { year: ev.y, description: ev.t, image_url: ev.img || "" });
           eventIds.push(id);
         }
         await kv.set(`events:${date}`, eventIds);
+        console.log(`Sukces! Zapisano ${eventIds.length} nowych faktów.`);
       }
 
+      const events = [];
       for (const id of eventIds) {
         const event = await kv.hgetall(`event:${id}`);
         if (event) events.push({ id, ...event });
@@ -44,20 +55,9 @@ export default async function handler(req, res) {
       
       return res.status(200).json(events);
     } catch (err) {
-      console.error("Błąd API:", err);
-      // Zwracamy puste dane zamiast błędu, by strona nie wygasła
-      return res.status(200).json([{year: "AI", description: "Właśnie generuję nowe ciekawostki... Odśwież stronę za chwilę!", image_url: ""}]);
+      console.error("KRYTYCZNY BŁĄD API:", err);
+      return res.status(200).json([{year: "INFO", description: `Błąd: ${err.message}. Sprawdź logi Vercel.`, image_url: ""}]);
     }
-  }
-
-  if (req.method === 'POST') {
-    let { month_day, year, description, image_url } = req.body;
-    const id = Date.now();
-    await kv.hset(`event:${id}`, { year, description, image_url: image_url || "" });
-    const eventIds = await kv.get(`events:${month_day}`) || [];
-    eventIds.push(id);
-    await kv.set(`events:${month_day}`, eventIds);
-    return res.status(200).json({ id });
   }
 
   res.status(405).json({ error: 'Method not allowed' });
